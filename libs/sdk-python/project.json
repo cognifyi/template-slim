@@ -17,10 +17,7 @@
       "cache": true,
       "inputs": [
         "default",
-        "{workspaceRoot}/libs/api-client-python/**/*",
-        "{workspaceRoot}/libs/api-client-python-async/**/*",
-        "{workspaceRoot}/libs/toolbox-api-client-python/**/*",
-        "{workspaceRoot}/libs/toolbox-api-client-python-async/**/*"
+        "{workspaceRoot}/libs/api-client-python/**/*"
       ],
       "outputs": [],
       "options": {
@@ -44,12 +41,7 @@
       "dependsOn": [
         {
           "target": "publish",
-          "projects": [
-            "api-client-python",
-            "api-client-python-async",
-            "toolbox-api-client-python",
-            "toolbox-api-client-python-async"
-          ]
+          "projects": ["api-client-python"]
         }
       ]
     },
@@ -89,9 +81,9 @@
         "cwd": "{projectRoot}",
         "commands": [
           "poetry publish --username __token__ --password $PYPI_TOKEN --no-interaction",
-          "sed -i 's/^name = \"[^\"]*\"/name = \"daytona_sdk\"/' pyproject.toml",
+          "sed -i 's/^name = \"[^\"]*\"/name = \"template_slim_sdk\"/' pyproject.toml",
           "poetry publish --username __token__ --password $PYPI_TOKEN --no-interaction",
-          "sed -i 's/^name = \"[^\"]*\"/name = \"daytona\"/' pyproject.toml"
+          "sed -i 's/^name = \"[^\"]*\"/name = \"template_slim\"/' pyproject.toml"
         ],
         "parallel": false
       },

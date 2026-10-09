@@ -17,7 +17,7 @@ import {
   isTransitioning,
 } from '@/lib/utils/sandbox'
 import { DEFAULT_TABLE_COLUMN, getColumnSizeStyles, getTableSizeStyles } from '@/lib/utils/table'
-import { OrganizationRolePermissionsEnum, SandboxListItem, SandboxState } from '@daytona/api-client'
+import { OrganizationRolePermissionsEnum, SandboxListItem, SandboxState } from '@template-slim/api-client'
 import {
   type ColumnPinningState,
   flexRender,

@@ -7,9 +7,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/cognifyi/cogbox/libs/sdk-go/pkg/options"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/template-org/template-slim/libs/sdk-go/pkg/options"
 )
 
 // TestBase tests the Base constructor

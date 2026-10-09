@@ -16,7 +16,7 @@ import { useOrganizations } from '@/hooks/useOrganizations'
 import { useSelectedOrganization } from '@/hooks/useSelectedOrganization'
 import { handleApiError } from '@/lib/error-handling'
 import { cn, getMaskedToken } from '@/lib/utils'
-import { ApiKeyResponse, CreateApiKeyPermissionsEnum, OrganizationRolePermissionsEnum } from '@daytona/api-client'
+import { ApiKeyResponse, CreateApiKeyPermissionsEnum, OrganizationRolePermissionsEnum } from '@template-slim/api-client'
 import { Check, ClipboardIcon, Eye, EyeOff, Loader2, Plus } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
@@ -334,9 +334,9 @@ const Onboarding: React.FC = () => {
 
 const codeExamples = {
   typescript: {
-    install: `npm install @daytona/sdk`,
+    install: `npm install @template-slim/sdk`,
     run: `npx tsx index.mts`,
-    example: `import { Daytona } from '@daytona/sdk'
+    example: `import { Daytona } from '@template-slim/sdk'
 
 // Initialize the Daytona client
 const daytona = new Daytona({ apiKey: 'your-api-key' });

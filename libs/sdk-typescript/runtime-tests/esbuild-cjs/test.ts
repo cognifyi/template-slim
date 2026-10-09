@@ -5,7 +5,7 @@
 // to CJS. pipInstallFromRequirements is a synchronous, no-network path that
 // exercises dynamicRequire('fs').
 
-import { Daytona, Image } from '@daytona/sdk'
+import { Daytona, Image } from '@template-slim/sdk'
 import * as fs from 'node:fs'
 import * as os from 'node:os'
 import * as path from 'node:path'

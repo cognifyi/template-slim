@@ -3,8 +3,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { ObjectStorageApi, SnapshotsApi, SnapshotState, SandboxClass, Configuration } from '@daytona/api-client'
-import type { SnapshotDto, CreateSnapshot, PaginatedSnapshots as PaginatedSnapshotsDto } from '@daytona/api-client'
+import { ObjectStorageApi, SnapshotsApi, SnapshotState, SandboxClass, Configuration } from '@template-slim/api-client'
+import type {
+  SnapshotDto,
+  CreateSnapshot,
+  PaginatedSnapshots as PaginatedSnapshotsDto,
+} from '@template-slim/api-client'
 import { DaytonaError } from './errors/DaytonaError'
 import { Image } from './Image'
 import type { Resources } from './Daytona'

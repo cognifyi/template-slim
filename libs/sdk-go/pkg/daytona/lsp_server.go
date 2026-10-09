@@ -7,9 +7,9 @@ import (
 	"context"
 	"strings"
 
-	"github.com/cognifyi/cogbox/libs/sdk-go/pkg/errors"
-	"github.com/cognifyi/cogbox/libs/sdk-go/pkg/types"
-	"github.com/cognifyi/cogbox/libs/toolbox-api-client-go"
+	"github.com/template-org/template-slim/libs/sdk-go/pkg/errors"
+	"github.com/template-org/template-slim/libs/sdk-go/pkg/types"
+	"github.com/template-org/template-slim/libs/toolbox-api-client-go"
 )
 
 // LspServerService provides Language Server Protocol (LSP) operations for a sandbox.

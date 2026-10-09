@@ -10,10 +10,10 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/cognifyi/cogbox/libs/sdk-go/pkg/options"
-	toolbox "github.com/cognifyi/cogbox/libs/toolbox-api-client-go"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/template-org/template-slim/libs/sdk-go/pkg/options"
+	toolbox "github.com/template-org/template-slim/libs/toolbox-api-client-go"
 )
 
 func TestGitServiceCreation(t *testing.T) {

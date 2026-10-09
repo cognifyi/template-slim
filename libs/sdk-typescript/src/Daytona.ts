@@ -11,8 +11,8 @@ import {
   SandboxState,
   VolumesApi,
   ConfigApi,
-} from '@daytona/api-client'
-import type { GpuType, SandboxVolume } from '@daytona/api-client'
+} from '@template-slim/api-client'
+import type { GpuType, SandboxVolume } from '@template-slim/api-client'
 import axios, { AxiosError } from 'axios'
 import type { AxiosInstance, InternalAxiosRequestConfig } from 'axios'
 import {
@@ -306,7 +306,7 @@ export class Daytona implements AsyncDisposable {
       orgHeader['X-Daytona-Organization-ID'] = this.organizationId
     }
 
-    const isLegacyPackage = packageJson.name === '@daytonaio/sdk'
+    const isLegacyPackage = packageJson.name === '@template-org/sdk'
     const sdkLabel = isLegacyPackage ? 'sdk-typescript-legacy' : 'sdk-typescript'
 
     const configuration = new Configuration({

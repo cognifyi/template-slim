@@ -217,7 +217,7 @@ This requires an AI coding-agent CLI to already be installed and authenticated l
 This guide ships the resulting `.flue/connectors/daytona.ts` pre-built so the demo runs without an extra step, but the file is byte-identical to what `flue add daytona | <agent>` produces. Once installed, you import the connector and pass it to `init()`:
 
 ```typescript
-import { Daytona } from '@daytona/sdk'
+import { Daytona } from '@template-slim/sdk'
 import { daytona } from '../connectors/daytona'
 
 const client = new Daytona({ apiKey: env.DAYTONA_API_KEY })

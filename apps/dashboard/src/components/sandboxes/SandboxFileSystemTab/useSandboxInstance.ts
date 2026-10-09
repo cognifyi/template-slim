@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-import { Daytona } from '@daytona/sdk'
+import { Daytona } from '@template-slim/sdk'
 import { useMemo } from 'react'
 import { useAuth } from 'react-oidc-context'
 

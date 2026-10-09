@@ -31,7 +31,7 @@ import {
   type Organization,
   OrganizationUserRoleEnum,
   UpdateOrganizationInvitationRoleEnum,
-} from '@daytona/api-client'
+} from '@template-slim/api-client'
 import { AlertCircle, Building2, PlusIcon, RefreshCw } from 'lucide-react'
 import React, { useMemo, useRef } from 'react'
 import { useAuth } from 'react-oidc-context'

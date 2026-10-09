@@ -75,8 +75,8 @@ import {
   SandboxListSortDirection,
   SandboxListSortField,
   SandboxState,
-} from '@daytona/api-client'
-import type { Sandbox as CreatedSandbox } from '@daytona/sdk'
+} from '@template-slim/api-client'
+import type { Sandbox as CreatedSandbox } from '@template-slim/sdk'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { PlusIcon } from 'lucide-react'
 import {

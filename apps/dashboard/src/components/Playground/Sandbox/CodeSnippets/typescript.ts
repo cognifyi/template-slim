@@ -15,7 +15,7 @@ export const TypeScriptSnippetGenerator: CodeSnippetGenerator = {
         p.config.createSandboxFromImage ? 'Image' : '',
       ]
         .filter(Boolean)
-        .join(', ') + " } from '@daytona/sdk'\n"
+        .join(', ') + " } from '@template-slim/sdk'\n"
     )
   },
 

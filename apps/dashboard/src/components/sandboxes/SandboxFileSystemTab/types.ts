@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-import type { Daytona } from '@daytona/sdk'
+import type { Daytona } from '@template-slim/sdk'
 
 export type PreviewKind = 'binary' | 'image' | 'text'
 

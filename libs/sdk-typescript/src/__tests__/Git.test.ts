@@ -4,7 +4,7 @@
 import { createApiResponse } from './helpers'
 import { Git } from '../Git'
 
-jest.mock('@daytona/toolbox-api-client', () => ({}), { virtual: true })
+jest.mock('@template-slim/toolbox-api-client', () => ({}), { virtual: true })
 
 describe('Git', () => {
   const apiClient = {

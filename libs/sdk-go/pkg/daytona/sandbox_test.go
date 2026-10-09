@@ -12,11 +12,11 @@ import (
 	"testing"
 	"time"
 
-	apiclient "github.com/cognifyi/cogbox/libs/api-client-go"
-	"github.com/cognifyi/cogbox/libs/sdk-go/pkg/types"
-	toolbox "github.com/cognifyi/cogbox/libs/toolbox-api-client-go"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	apiclient "github.com/template-org/template-slim/libs/api-client-go"
+	"github.com/template-org/template-slim/libs/sdk-go/pkg/types"
+	toolbox "github.com/template-org/template-slim/libs/toolbox-api-client-go"
 )
 
 func TestNewSandboxConstruction(t *testing.T) {

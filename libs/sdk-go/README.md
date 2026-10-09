@@ -12,8 +12,8 @@ import (
     "log"
     "time"
 
-    "github.com/cognifyi/cogbox/libs/sdk-go/pkg/daytona"
-    "github.com/cognifyi/cogbox/libs/sdk-go/pkg/types"
+    "github.com/template-org/template-slim/libs/sdk-go/pkg/daytona"
+    "github.com/template-org/template-slim/libs/sdk-go/pkg/types"
 )
 
 func main() {
@@ -252,5 +252,5 @@ Apache-2.0
 
 For issues and questions:
 
-- **GitHub Issues**: https://github.com/cognifyi/cogbox/issues
+- **GitHub Issues**: https://github.com/template-org/template-slim/issues
 - **Documentation**: https://www.daytona.io/docs

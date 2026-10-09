@@ -17,10 +17,6 @@ header:
     - 'libs/**/*.py'
     - 'libs/**/*.rb'
     - 'libs/**/*.java'
-    - 'guides/**/*.py'
-    - 'guides/**/*.ts'
-    - 'guides/**/*.go'
-    - 'guides/**/*.js'
 
   paths-ignore:
     - 'libs/analytics-api-client/**'

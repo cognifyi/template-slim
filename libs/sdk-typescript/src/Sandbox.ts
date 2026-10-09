@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { SandboxState, SandboxApi, SandboxBackupStateEnum, Configuration } from '@daytona/api-client'
+import { SandboxState, SandboxApi, SandboxBackupStateEnum, Configuration } from '@template-slim/api-client'
 import type {
   Sandbox as SandboxDto,
   SandboxListItem as SandboxListItemDto,
@@ -18,7 +18,7 @@ import type {
   UpdateSandboxNetworkSettings,
   SandboxListSortField,
   SandboxListSortDirection,
-} from '@daytona/api-client'
+} from '@template-slim/api-client'
 import { Daytona } from './Daytona'
 import type { Resources } from './Daytona'
 import {
@@ -29,7 +29,7 @@ import {
   InfoApi,
   ComputerUseApi,
   InterpreterApi,
-} from '@daytona/toolbox-api-client'
+} from '@template-slim/toolbox-api-client'
 import { FileSystem } from './FileSystem'
 import { Git } from './Git'
 import { Process } from './Process'

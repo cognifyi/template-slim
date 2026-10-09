@@ -5,7 +5,7 @@ description: Use the Daytona Pi extension to run every Pi tool call inside a rem
 
 import piExtensionGif from '../../../../../assets/docs/images/pi-extension.gif'
 
-This guide demonstrates how to run the [Daytona Pi extension](https://www.npmjs.com/package/@daytona/pi) which integrates Daytona sandboxes and [Pi](https://pi.dev/). When the extension is active, the agent runs on your machine while every tool call — `bash`, file I/O, and search — runs inside a secure Daytona sandbox. Each session gets its own sandbox, and your work is synced to a per-session GitHub branch.
+This guide demonstrates how to run the [Daytona Pi extension](https://www.npmjs.com/package/@template-slim/pi) which integrates Daytona sandboxes and [Pi](https://pi.dev/). When the extension is active, the agent runs on your machine while every tool call — `bash`, file I/O, and search — runs inside a secure Daytona sandbox. Each session gets its own sandbox, and your work is synced to a per-session GitHub branch.
 
 ### 1. Workflow Overview
 
@@ -35,7 +35,7 @@ See the [Pi documentation](https://pi.dev/) for other install options.
 Add the Daytona extension to Pi:
 
 ```bash
-pi install npm:@daytona/pi
+pi install npm:@template-slim/pi
 ```
 
 To update it later, run `pi update` — `pi install` will not refresh an existing install.
@@ -99,7 +99,7 @@ A session flows through it like this:
 
 #### 1. Tool registration
 
-Each built-in tool is re-registered so that, when a sandbox is active, it runs against it through the [Daytona SDK](https://www.npmjs.com/package/@daytona/sdk). A small `sandboxTool` helper wraps a local tool with a per-call rebuild against the active sandbox:
+Each built-in tool is re-registered so that, when a sandbox is active, it runs against it through the [Daytona SDK](https://www.npmjs.com/package/@template-slim/sdk). A small `sandboxTool` helper wraps a local tool with a per-call rebuild against the active sandbox:
 
 ```typescript
 // Wrap a local tool so it runs against the sandbox (rebuilt per call) when one is active.

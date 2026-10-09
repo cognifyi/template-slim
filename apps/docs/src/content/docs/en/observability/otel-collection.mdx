@@ -165,7 +165,7 @@ export DAYTONA_OTEL_ENABLED=true
 
   <TabItem label="TypeScript" icon="seti:typescript">
     ```typescript
-    import { Daytona } from '@daytona/sdk'
+    import { Daytona } from '@template-slim/sdk'
 
     // Using async dispose (recommended)
     await using daytona = new Daytona({ otelEnabled: true })
@@ -373,7 +373,7 @@ print(f"NumPy version: {np.__version__}")
     process.env.OTEL_EXPORTER_OTLP_ENDPOINT = "https://otlp.nr-data.net:4317"
     process.env.OTEL_EXPORTER_OTLP_HEADERS = "api-key=YOUR_API_KEY"
 
-    import { Daytona } from '@daytona/sdk'
+    import { Daytona } from '@template-slim/sdk'
 
     async function main() {
       // Initialize Daytona with OTEL enabled

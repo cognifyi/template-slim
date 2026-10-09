@@ -1,4 +1,4 @@
-module github.com/cognifyi/cogbox/libs/api-client-go
+module github.com/template-org/template-slim/libs/api-client-go
 
 go 1.23
 

@@ -23,7 +23,7 @@ import {
   TierApi,
   UsageApi,
   WalletApi,
-} from '@daytona/billing-api-client'
+} from '@template-slim/billing-api-client'
 import { AxiosInstance } from 'axios'
 
 export class BillingApiClient {

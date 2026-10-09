@@ -5,7 +5,7 @@ import { createApiResponse } from './helpers'
 import { DaytonaNotFoundError } from '../errors/DaytonaError'
 import { VolumeService } from '../Volume'
 
-jest.mock('@daytona/api-client', () => ({}), { virtual: true })
+jest.mock('@template-slim/api-client', () => ({}), { virtual: true })
 
 describe('VolumeService', () => {
   const volumesApi = {

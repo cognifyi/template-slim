@@ -24,7 +24,6 @@ header:
     - 'examples/**'
     - 'apps/docs/**'
     - 'hack/**'
-    - 'guides/**'
     - 'apps/daemon/pkg/toolbox/docs/docs.go'
     - 'apps/dashboard/public/mockServiceWorker.js'
 

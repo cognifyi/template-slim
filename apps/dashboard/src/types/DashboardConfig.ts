@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-import { DaytonaConfiguration } from '@daytona/api-client'
+import { DaytonaConfiguration } from '@template-slim/api-client'
 
 export type DashboardConfig = DaytonaConfiguration & {
   apiUrl: string

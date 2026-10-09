@@ -25,7 +25,7 @@ import {
   Resources,
   ScreenshotOptions,
   ScreenshotRegion,
-} from '@daytona/sdk'
+} from '@template-slim/sdk'
 import { createContext, ReactNode } from 'react'
 
 export interface ParameterFormItem {

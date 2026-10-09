@@ -6,8 +6,8 @@
     "outDir": "../../dist/libs/sdk-typescript/cjs",
     "baseUrl": ".",
     "paths": {
-      "@daytona/api-client": ["../../dist/libs/api-client/src"],
-      "@daytona/toolbox-api-client": ["../../dist/libs/toolbox-api-client/src"]
+      "@template-slim/api-client": ["../../dist/libs/api-client/src"],
+      "@template-slim/toolbox-api-client": ["../../dist/libs/toolbox-api-client/src"]
     }
   }
 }

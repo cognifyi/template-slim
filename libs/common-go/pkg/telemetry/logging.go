@@ -10,7 +10,7 @@ import (
 	"log/slog"
 	"time"
 
-	"github.com/cognifyi/cogbox/common-go/pkg/log"
+	"github.com/template-org/template-slim/common-go/pkg/log"
 	"go.opentelemetry.io/contrib/bridges/otelslog"
 	"go.opentelemetry.io/otel/exporters/otlp/otlplog/otlploghttp"
 	"go.opentelemetry.io/otel/log/global"

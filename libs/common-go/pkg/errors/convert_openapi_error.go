@@ -7,7 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 
-	apiclient "github.com/cognifyi/cogbox/libs/api-client-go"
+	apiclient "github.com/template-org/template-slim/libs/api-client-go"
 )
 
 func ConvertOpenAPIError(err error) error {

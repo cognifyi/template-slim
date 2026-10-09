@@ -1,5 +1,5 @@
 {
-  "name": "@daytona/sdk",
+  "name": "@template-slim/sdk",
   "version": "0.0.0-dev",
   "description": "Daytona TypeScript SDK for sandbox management and code execution",
   "exports": {

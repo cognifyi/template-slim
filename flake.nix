@@ -124,42 +124,14 @@
           export POETRY_VIRTUALENVS_IN_PROJECT=true
         '';
 
-        # ──────────────────────────────────────────────
-        # Ruby toolchain
-        # Covers: libs/{sdk-ruby,api-client-ruby,toolbox-api-client-ruby}
-        # ──────────────────────────────────────────────
-        rubyPkgs = with pkgs; [
-          ruby_3_4 # matches devcontainer 3.4.5
-        ] ++ darwinDeps;
-
-        rubyShellHook = ''
-          export RUBYLIB="$PWD/libs/sdk-ruby/lib:$PWD/libs/api-client-ruby/lib:$PWD/libs/toolbox-api-client-ruby/lib"
-          export BUNDLE_GEMFILE="$PWD/Gemfile"
-          export BUNDLE_PATH="$PWD/.bundle"
-        '';
-
-        # ──────────────────────────────────────────────
-        # Java toolchain
-        # Covers: libs/{sdk-java,api-client-java,toolbox-api-client-java}
-        #         examples/java
-        # ──────────────────────────────────────────────
-        javaPkgs = [
-          pkgs.jdk17 # Gradle 8.10 requires JDK 17+; source targets Java 11
-          pkgs.gradle
-        ];
-
-        javaShellHook = ''
-          export JAVA_HOME="${pkgs.jdk17.home}"
-        '';
-
       in
       {
         devShells = {
 
           # Full monorepo — every language and tool
           default = pkgs.mkShell {
-            name = "daytona";
-            packages = commonPkgs ++ goPkgs ++ nodePkgs ++ pythonPkgs ++ rubyPkgs ++ javaPkgs;
+            name = "template-slim";
+            packages = commonPkgs ++ goPkgs ++ nodePkgs ++ pythonPkgs;
             buildInputs = bpfHeaderInputs;
             # bpf2go invokes clang with `-target bpf`; the cc-wrapper's hardening
             # flags (e.g. -fzero-call-used-regs) are unsupported for that target.
@@ -168,14 +140,12 @@
               ${goShellHook}
               ${nodeShellHook}
               ${pythonShellHook}
-              ${rubyShellHook}
-              ${javaShellHook}
             '';
           };
 
           # Go services and libraries only
           go = pkgs.mkShell {
-            name = "daytona-go";
+            name = "template-slim-go";
             packages = commonPkgs ++ goPkgs;
             buildInputs = bpfHeaderInputs;
             # bpf2go invokes clang with `-target bpf`; the cc-wrapper's hardening
@@ -186,30 +156,16 @@
 
           # TypeScript / Node.js apps and libraries only
           node = pkgs.mkShell {
-            name = "daytona-node";
+            name = "template-slim-node";
             packages = commonPkgs ++ nodePkgs;
             shellHook = nodeShellHook;
           };
 
           # Python SDKs and libraries only
           python = pkgs.mkShell {
-            name = "daytona-python";
+            name = "template-slim-python";
             packages = commonPkgs ++ pythonPkgs;
             shellHook = pythonShellHook;
-          };
-
-          # Ruby SDKs and libraries only
-          ruby = pkgs.mkShell {
-            name = "daytona-ruby";
-            packages = commonPkgs ++ rubyPkgs;
-            shellHook = rubyShellHook;
-          };
-
-          # Java SDKs and libraries only
-          java = pkgs.mkShell {
-            name = "daytona-java";
-            packages = commonPkgs ++ javaPkgs;
-            shellHook = javaShellHook;
           };
         };
       }

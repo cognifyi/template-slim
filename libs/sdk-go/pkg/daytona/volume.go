@@ -7,9 +7,9 @@ import (
 	"context"
 	"time"
 
-	apiclient "github.com/cognifyi/cogbox/libs/api-client-go"
-	"github.com/cognifyi/cogbox/libs/sdk-go/pkg/errors"
-	"github.com/cognifyi/cogbox/libs/sdk-go/pkg/types"
+	apiclient "github.com/template-org/template-slim/libs/api-client-go"
+	"github.com/template-org/template-slim/libs/sdk-go/pkg/errors"
+	"github.com/template-org/template-slim/libs/sdk-go/pkg/types"
 )
 
 // VolumeService provides persistent storage volume management operations.

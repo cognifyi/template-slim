@@ -92,13 +92,7 @@
     "docker": {
       "options": {
         "target": "daytona"
-      },
-      "dependsOn": [
-        {
-          "target": "build-amd64",
-          "projects": "runner"
-        }
-      ]
+      }
     },
     "push-manifest": {},
     "lint": {

@@ -5,29 +5,27 @@
   "private": true,
   "scripts": {
     "postinstall": "is-ci || husky",
-    "format": "nx run-many --target=format --all --parallel=$(getconf _NPROCESSORS_ONLN) && prettier --write \"*.{ts,js,json,yaml}\" \"functions/**/*.js\" && markdownlint-cli2 \"**/*.{mdx,md}\" --fix && yarn format:py",
-    "format:py": "isort libs examples/python guides/python --skip-glob \"**/libs/*api-client-python*/**\" --skip-glob \"**/.venv/**\" && nbqa isort examples/jupyter && black libs examples guides/python --extend-exclude '(^|/)(libs/.*api-client-python.*|\\.venv)(/|$)'",
+    "format": "nx run-many --target=format --all --parallel=$(getconf _NPROCESSORS_ONLN) && prettier --write \"*.{ts,js,json,yaml}\" && markdownlint-cli2 \"**/*.{mdx,md}\" --fix && yarn format:py",
+    "format:py": "isort libs --skip-glob \"**/libs/*api-client-python*/**\" --skip-glob \"**/.venv/**\" && black libs --extend-exclude '(^|/)(libs/.*api-client-python.*|\\\\.venv)(/|$)'",
     "lint": "yarn lint:ts && yarn lint:py",
     "lint:ts": "eslint \"{apps,libs,test}/**/*.{ts,tsx}\"",
-    "lint:py": "pylint libs examples/python --recursive=y -sn && nbqa pylint examples/jupyter --recursive=y -sn && basedpyright",
+    "lint:py": "pylint libs --recursive=y -sn && basedpyright",
     "lint:fix": "eslint \"{apps,libs,test}/**/*.{ts,tsx}\" --fix && nx run api:lint",
     "test": "nx run-many --target=test --all --nxBail=true",
     "test:e2e": "nx run-many --target=test:e2e --all --nxBail=true",
     "build": "nx run-many --target=build --all --parallel=$(getconf _NPROCESSORS_ONLN) --configuration=development",
     "build:production": "nx run-many --target=build --all --parallel=$(getconf _NPROCESSORS_ONLN) --configuration=production --nxBail=true",
-    "docker:production": "SKIP_COMPUTER_USE_BUILD=true nx run-many --target=docker --all --exclude=sandbox-gpu,sandbox,sandbox-slim --parallel=$(getconf _NPROCESSORS_ONLN) --configuration=production --output-style=stream",
-    "serve": "nx run-many --target=serve --all --exclude=daemon --parallel=$(getconf _NPROCESSORS_ONLN) --configuration=development",
-    "serve-slim": "nx run-many --target=serve --projects=api,runner,proxy,dashboard --parallel=$(getconf _NPROCESSORS_ONLN) --configuration=development",
-    "serve:skip-runner": "nx run-many --target=serve --all --exclude=runner,daemon --parallel=$(getconf _NPROCESSORS_ONLN) --configuration=development",
-    "serve:skip-proxy": "nx run-many --target=serve --all --exclude=proxy,daemon --parallel=$(getconf _NPROCESSORS_ONLN) --configuration=development",
-    "serve:production": "nx run-many --target=serve --all --exclude=daemon --parallel=$(getconf _NPROCESSORS_ONLN) --configuration=production",
-    "generate:api-client": "nx run-many --target=generate:api-client --all --exclude=analytics-api-client,billing-api-client --parallel=$(getconf _NPROCESSORS_ONLN)",
+    "docker:production": "nx run-many --target=docker --all --parallel=$(getconf _NPROCESSORS_ONLN) --configuration=production --output-style=stream",
+    "serve": "nx run-many --target=serve --all --parallel=$(getconf _NPROCESSORS_ONLN) --configuration=development",
+    "serve-slim": "nx run-many --target=serve --projects=api,web --parallel=$(getconf _NPROCESSORS_ONLN) --configuration=development",
+    "serve:production": "nx run-many --target=serve --all --parallel=$(getconf _NPROCESSORS_ONLN) --configuration=production",
+    "generate:api-client": "nx run-many --target=generate:api-client --all --parallel=$(getconf _NPROCESSORS_ONLN)",
     "migration:generate": "cd apps/api && npx ts-node -P ./tsconfig.json -r tsconfig-paths/register ../../node_modules/typeorm/cli.js migration:generate -d ./src/migrations/pre-deploy/data-source.ts ./src/migrations/pre-deploy/migration && npx ts-node -P ./tsconfig.json -r tsconfig-paths/register ../../node_modules/typeorm/cli.js migration:generate -d ./src/migrations/post-deploy/data-source.ts ./src/migrations/post-deploy/migration",
     "migration:run:init": "cd apps/api && npx ts-node -P ./tsconfig.json -r tsconfig-paths/register ../../node_modules/typeorm/cli.js migration:run -d ./src/migrations/data-source.ts",
     "migration:run:pre-deploy": "cd apps/api && npx ts-node -P ./tsconfig.json -r tsconfig-paths/register ../../node_modules/typeorm/cli.js migration:run -d ./src/migrations/pre-deploy/data-source.ts",
     "migration:run:post-deploy": "cd apps/api && npx ts-node -P ./tsconfig.json -r tsconfig-paths/register ../../node_modules/typeorm/cli.js migration:run -d ./src/migrations/post-deploy/data-source.ts",
     "migration:revert": "cd apps/api && npx ts-node -P ./tsconfig.json -r tsconfig-paths/register ../../node_modules/typeorm/cli.js migration:revert -d ./src/migrations/data-source.ts",
-    "shadcn:add": "TS_NODE_PROJECT=apps/dashboard/tsconfig.app.json npx shadcn@latest add",
+    "shadcn:add": "TS_NODE_PROJECT=apps/web/tsconfig.app.json npx shadcn@latest add",
     "docs": "nx run-many --target=docs --all",
     "publish": "nx run-many --target=publish --exclude=sdk-go --all",
     "prepare-release": "nx run-many --target=prepare-release --all",
@@ -247,6 +245,7 @@
     "@nx/jest": "21.4.1",
     "@nx/js": "21.4.1",
     "@nx/nest": "21.4.1",
+    "@nx/next": "21.4.1",
     "@nx/node": "21.4.1",
     "@nx/react": "21.4.1",
     "@nx/vite": "21.4.1",
@@ -346,26 +345,17 @@
     "!(libs/*api-client-go*/**/*)*.go": [
       "gofmt -w"
     ],
-    "!(libs/*api-client-ruby*/**/*)*.rb": [
-      "rubocop -a --fail-level fatal"
-    ],
     "*.{mdx,md}": [
       "markdownlint-cli2 --fix"
-    ],
-    "!(libs/*api-client-python*/**/*|guides/typescript/**/*|libs/sdk-python/tests/**/*)*.py": [
-      "isort",
-      "black --config pyproject.toml",
-      "pylint -sn",
-      "basedpyright"
     ],
     "libs/sdk-python/tests/**/*.py": [
       "isort",
       "black --config pyproject.toml"
     ],
-    "*.ipynb": [
-      "nbqa isort",
+    "!(libs/*api-client-python*/**|libs/sdk-python/tests/**/*)*.py": [
+      "isort",
       "black --config pyproject.toml",
-      "nbqa pylint -sn",
+      "pylint -sn",
       "basedpyright"
     ]
   }

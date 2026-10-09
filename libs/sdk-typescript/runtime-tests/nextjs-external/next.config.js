@@ -5,5 +5,5 @@
 // bundle them via webpack. Node loads them as ESM at runtime, which is the
 // failure mode reported in issue #4771.
 module.exports = {
-  serverExternalPackages: ['@daytona/sdk', '@daytona/api-client', '@daytona/toolbox-api-client'],
+  serverExternalPackages: ['@template-slim/sdk', '@template-slim/api-client', '@template-slim/toolbox-api-client'],
 }

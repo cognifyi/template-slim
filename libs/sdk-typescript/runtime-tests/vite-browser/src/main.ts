@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Buffer } from 'buffer'
-import { Daytona, Image } from '@daytona/sdk'
+import { Daytona, Image } from '@template-slim/sdk'
 
 const result: Record<string, unknown> = {
   imageOk: false,

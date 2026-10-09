@@ -5,8 +5,14 @@
 
 import * as pathe from 'pathe'
 import axios from 'axios'
-import { Configuration, FileSystemApi } from '@daytona/toolbox-api-client'
-import type { FileInfo, Match, ReplaceRequest, ReplaceResult, SearchFilesResponse } from '@daytona/toolbox-api-client'
+import { Configuration, FileSystemApi } from '@template-slim/toolbox-api-client'
+import type {
+  FileInfo,
+  Match,
+  ReplaceRequest,
+  ReplaceResult,
+  SearchFilesResponse,
+} from '@template-slim/toolbox-api-client'
 import { dynamicImport } from './utils/Import'
 import { RUNTIME, Runtime } from './utils/Runtime'
 import { createDaytonaError, DaytonaError } from './errors/DaytonaError'

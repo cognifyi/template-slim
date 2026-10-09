@@ -32,7 +32,7 @@ export default defineConfig((mode) => ({
   },
   plugins: [
     react(),
-    // Required for @daytona/sdk
+    // Required for @template-slim/sdk
     nodePolyfills({
       globals: { global: true, process: true, Buffer: true },
       overrides: {
@@ -72,9 +72,9 @@ export default defineConfig((mode) => ({
   ],
   resolve: {
     alias: [
-      // Resolve @daytona/sdk to the built ESM entry so browsers never receive raw SDK TypeScript decorators.
+      // Resolve @template-slim/sdk to the built ESM entry so browsers never receive raw SDK TypeScript decorators.
       {
-        find: '@daytona/sdk',
+        find: '@template-slim/sdk',
         replacement: path.resolve(__dirname, '../../dist/libs/sdk-typescript'),
       },
       // Target @ but not @daytona,

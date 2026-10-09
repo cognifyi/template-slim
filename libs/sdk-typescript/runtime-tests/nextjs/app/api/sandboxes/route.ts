@@ -1,7 +1,7 @@
 // Copyright Daytona Platforms Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Daytona, Image } from '@daytona/sdk'
+import { Daytona, Image } from '@template-slim/sdk'
 
 export const dynamic = 'force-dynamic'
 

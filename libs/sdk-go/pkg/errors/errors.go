@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"net/http"
 
-	apiclient "github.com/cognifyi/cogbox/libs/api-client-go"
-	"github.com/cognifyi/cogbox/libs/toolbox-api-client-go"
+	apiclient "github.com/template-org/template-slim/libs/api-client-go"
+	"github.com/template-org/template-slim/libs/toolbox-api-client-go"
 )
 
 // DaytonaError is the base error type for all Daytona SDK errors

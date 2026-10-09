@@ -13,11 +13,11 @@ import (
 	"testing"
 	"time"
 
-	apiclient "github.com/cognifyi/cogbox/libs/api-client-go"
-	"github.com/cognifyi/cogbox/libs/sdk-go/pkg/options"
-	"github.com/cognifyi/cogbox/libs/sdk-go/pkg/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	apiclient "github.com/template-org/template-slim/libs/api-client-go"
+	"github.com/template-org/template-slim/libs/sdk-go/pkg/options"
+	"github.com/template-org/template-slim/libs/sdk-go/pkg/types"
 )
 
 // TestNewClient tests the NewClient function

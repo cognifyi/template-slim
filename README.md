@@ -92,7 +92,7 @@ Standalone packages and libraries for interacting with Daytona using Python:
 #### TypeScript
 
 ```bash
-npm install @daytona/sdk
+npm install @template-slim/sdk
 ```
 
 Standalone packages and libraries for interacting with Daytona using TypeScript:
@@ -171,7 +171,7 @@ print(response.result)
 ### Typescript SDK
 
 ```jsx
-import { Daytona } from "@daytona/sdk";
+import { Daytona } from "@template-slim/sdk";
 
 const daytona = new Daytona({ apiKey: "YOUR_API_KEY" });
 const sandbox = await daytona.create();

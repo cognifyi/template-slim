@@ -10,9 +10,9 @@ import (
 	"testing"
 	"time"
 
-	apiclient "github.com/cognifyi/cogbox/libs/api-client-go"
-	"github.com/cognifyi/cogbox/libs/sdk-go/pkg/types"
 	"github.com/stretchr/testify/require"
+	apiclient "github.com/template-org/template-slim/libs/api-client-go"
+	"github.com/template-org/template-slim/libs/sdk-go/pkg/types"
 )
 
 func writeJSONResponse(t *testing.T, w http.ResponseWriter, status int, payload any) {

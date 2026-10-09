@@ -51,7 +51,7 @@ pip install daytona
 ### TypeScript SDK
 
 ```bash
-npm install @daytona/sdk
+npm install @template-slim/sdk
 ```
 
 ---
@@ -100,7 +100,7 @@ daytona.delete(sandbox)
 ### Typescript SDK
 
 ```jsx
-import { Daytona } from '@daytona/sdk'
+import { Daytona } from '@template-slim/sdk'
 
 async function main() {
   // Initialize the Daytona client

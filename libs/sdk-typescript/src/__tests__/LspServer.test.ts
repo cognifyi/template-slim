@@ -4,7 +4,7 @@
 import { createApiResponse } from './helpers'
 import { DaytonaValidationError } from '../errors/DaytonaError'
 
-jest.mock('@daytona/toolbox-api-client', () => ({}), { virtual: true })
+jest.mock('@template-slim/toolbox-api-client', () => ({}), { virtual: true })
 
 describe('LspServer', () => {
   const apiClient = {

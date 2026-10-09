@@ -72,7 +72,7 @@ export {
   SandboxListSortField,
   SandboxListSortDirection,
   SandboxClass,
-} from '@daytona/api-client'
+} from '@template-slim/api-client'
 export type {
   FileInfo,
   GitStatus,
@@ -80,7 +80,7 @@ export type {
   Match,
   ReplaceResult,
   SearchFilesResponse,
-} from '@daytona/toolbox-api-client'
+} from '@template-slim/toolbox-api-client'
 
 export type {
   ScreenshotRegion,

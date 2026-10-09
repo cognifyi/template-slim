@@ -13,9 +13,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/cognifyi/cogbox/libs/sdk-go/pkg/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/template-org/template-slim/libs/sdk-go/pkg/types"
 )
 
 func TestComputerUseServiceCreation(t *testing.T) {

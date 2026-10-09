@@ -37,7 +37,7 @@ import {
   CreateSandboxFromImageParams,
   CreateSandboxFromSnapshotParams,
   Image,
-} from '@daytona/sdk'
+} from '@template-slim/sdk'
 import { useCallback, useState } from 'react'
 
 const PARAM_SECTION_MAP: Partial<Record<keyof SandboxParams, SandboxParametersSections>> = {

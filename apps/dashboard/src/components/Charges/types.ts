@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-import { Charge } from '@daytona/billing-api-client'
+import { Charge } from '@template-slim/billing-api-client'
 import { Table } from '@tanstack/react-table'
 
 export interface ChargesTableProps {

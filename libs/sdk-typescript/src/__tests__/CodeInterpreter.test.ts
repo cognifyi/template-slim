@@ -1,11 +1,11 @@
 // Copyright Daytona Platforms Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import type { Configuration } from '@daytona/api-client'
+import type { Configuration } from '@template-slim/api-client'
 
 const mockCreateSandboxWebSocket = jest.fn()
 
-jest.mock('@daytona/toolbox-api-client', () => ({}), { virtual: true })
+jest.mock('@template-slim/toolbox-api-client', () => ({}), { virtual: true })
 jest.mock('../utils/WebSocket', () => ({
   createSandboxWebSocket: (...args: unknown[]) => mockCreateSandboxWebSocket(...args),
 }))

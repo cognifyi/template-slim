@@ -10,7 +10,7 @@ import {
   ForkSandboxPayloadSchema,
   PauseSandboxPayloadSchema,
   RegistrySchema,
-} from '@daytona/runner-proto'
+} from '@template-slim/runner-proto'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository, IsNull, Not } from 'typeorm'
 import {
@@ -41,7 +41,7 @@ import {
   UpdateNetworkSettingsDTO,
   InspectSnapshotInRegistryRequest,
   RecoverSandboxDTO,
-} from '@daytona/runner-api-client'
+} from '@template-slim/runner-api-client'
 import { SnapshotStateError } from '../errors/snapshot-state-error'
 
 /**

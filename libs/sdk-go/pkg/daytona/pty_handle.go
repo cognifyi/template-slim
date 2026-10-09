@@ -11,9 +11,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/cognifyi/cogbox/libs/sdk-go/pkg/errors"
-	"github.com/cognifyi/cogbox/libs/sdk-go/pkg/types"
 	"github.com/gorilla/websocket"
+	"github.com/template-org/template-slim/libs/sdk-go/pkg/errors"
+	"github.com/template-org/template-slim/libs/sdk-go/pkg/types"
 )
 
 // PtyHandle manages a WebSocket connection to a PTY (pseudo-terminal) session.

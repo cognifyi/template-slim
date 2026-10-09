@@ -15,8 +15,8 @@ import {
   PaymentMethod,
   PaymentUrl,
   Tier,
-} from '@daytona/billing-api-client'
-import { DaytonaConfiguration } from '@daytona/api-client/src'
+} from '@template-slim/billing-api-client'
+import { DaytonaConfiguration } from '@template-slim/api-client/src'
 import { bypass, http, HttpResponse } from 'msw'
 
 const BILLING_API_URL = 'http://localhost:3000/api/billing'

@@ -5,7 +5,7 @@ import { chromium } from 'playwright'
 import { createServer } from 'http'
 import { readFileSync, existsSync } from 'fs'
 import { extname, join, resolve } from 'path'
-import { Daytona } from '@daytona/sdk'
+import { Daytona } from '@template-slim/sdk'
 
 const DIST = resolve('dist')
 const mime = { '.js': 'application/javascript', '.html': 'text/html', '.css': 'text/css', '.json': 'application/json' }

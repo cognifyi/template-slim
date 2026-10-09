@@ -1,7 +1,7 @@
 {
-  "name": "@daytona/api-client",
+  "name": "@template-slim/api-client",
   "version": "0.0.0-dev",
-  "description": "OpenAPI client for @daytona/api-client",
+  "description": "OpenAPI client for @template-slim/api-client",
   "author": "OpenAPI-Generator Contributors",
   "repository": {
     "type": "git",
@@ -12,7 +12,7 @@
     "typescript",
     "openapi-client",
     "openapi-generator",
-    "@daytona/api-client"
+    "@template-slim/api-client"
   ],
   "license": "Apache-2.0",
   "main": "./src/index.js",

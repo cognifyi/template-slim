@@ -1,4 +1,4 @@
-import { Daytona, Image } from '@daytona/sdk'
+import { Daytona, Image } from '@template-slim/sdk'
 
 const image = Image.base('alpine').env({ FOO: 'bar' })
 if (!image.dockerfile.includes('FROM alpine')) throw new Error('Image.base failed')

@@ -4,7 +4,7 @@
  */
 
 import { cn } from '@/lib/utils'
-import { SandboxClass, type RegionUsageOverview } from '@daytona/api-client'
+import { SandboxClass, type RegionUsageOverview } from '@template-slim/api-client'
 import type { ReactNode } from 'react'
 import QuotaLine from './QuotaLine'
 import { Skeleton } from './ui/skeleton'

@@ -4,7 +4,7 @@
  */
 
 import * as pathe from 'pathe'
-import { ComputerUseApi } from '@daytona/toolbox-api-client'
+import { ComputerUseApi } from '@template-slim/toolbox-api-client'
 import type {
   MousePositionResponse,
   MouseMoveRequest,
@@ -34,7 +34,7 @@ import type {
   AccessibilityInvokeRequest,
   AccessibilitySetValueRequest,
   FindAccessibilityNodesRequest,
-} from '@daytona/toolbox-api-client'
+} from '@template-slim/toolbox-api-client'
 import { dynamicImport } from './utils/Import'
 import { WithInstrumentation } from './utils/otel.decorator'
 

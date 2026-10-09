@@ -14,8 +14,8 @@ node -e "
 const fs = require('fs');
 const p = require('./package.json');
 p.overrides = {
-  '@daytona/api-client': '$API_CLIENT_TARBALL',
-  '@daytona/toolbox-api-client': '$TOOLBOX_API_CLIENT_TARBALL',
+  '@template-slim/api-client': '$API_CLIENT_TARBALL',
+  '@template-slim/toolbox-api-client': '$TOOLBOX_API_CLIENT_TARBALL',
 };
 fs.writeFileSync('./package.json', JSON.stringify(p, null, 2));
 "

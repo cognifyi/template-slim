@@ -9,8 +9,8 @@ import {
   Configuration as AnalyticsConfiguration,
   TelemetryApi as AnalyticsTelemetryApi,
   UsageApi as AnalyticsUsageApi,
-} from '@daytona/analytics-api-client'
-import { Configuration as BillingConfiguration } from '@daytona/billing-api-client'
+} from '@template-slim/analytics-api-client'
+import { Configuration as BillingConfiguration } from '@template-slim/billing-api-client'
 import {
   ApiKeysApi,
   AuditApi,
@@ -25,7 +25,7 @@ import {
   UsersApi,
   VolumesApi,
   WebhooksApi,
-} from '@daytona/api-client'
+} from '@template-slim/api-client'
 import axios, { AxiosError } from 'axios'
 import { DaytonaError } from './errors'
 

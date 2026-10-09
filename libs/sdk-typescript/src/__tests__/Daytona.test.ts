@@ -39,7 +39,7 @@ jest.mock('axios', () => {
 })
 
 jest.mock(
-  '@daytona/api-client',
+  '@template-slim/api-client',
   () => ({
     __esModule: true,
     Configuration: mockConfigurationCtor,

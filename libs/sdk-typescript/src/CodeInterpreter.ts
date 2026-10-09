@@ -8,9 +8,9 @@
  */
 
 import WebSocket from 'isomorphic-ws'
-import { InterpreterApi } from '@daytona/toolbox-api-client'
-import type { InterpreterContext } from '@daytona/toolbox-api-client'
-import { Configuration } from '@daytona/api-client'
+import { InterpreterApi } from '@template-slim/toolbox-api-client'
+import type { InterpreterContext } from '@template-slim/toolbox-api-client'
+import { Configuration } from '@template-slim/api-client'
 import {
   DaytonaConnectionError,
   DaytonaError,

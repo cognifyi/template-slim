@@ -5,7 +5,7 @@
 
 import { useAuth } from 'react-oidc-context'
 import { useCallback } from 'react'
-import { WebhookInitializationStatus } from '@daytona/api-client'
+import { WebhookInitializationStatus } from '@template-slim/api-client'
 
 export function useWebhookService() {
   const { user } = useAuth()

@@ -37,7 +37,7 @@ import {
   getTableColumnMaxResizeSize,
   getTableSizeStyles,
 } from '@/lib/utils/table'
-import { OrganizationRolePermissionsEnum, VolumeDto, VolumeState } from '@daytona/api-client'
+import { OrganizationRolePermissionsEnum, VolumeDto, VolumeState } from '@template-slim/api-client'
 import {
   ColumnDef,
   ColumnFiltersState,

@@ -34,7 +34,6 @@
     "sharedGlobals": ["{workspaceRoot}/.github/workflows/ci.yml"],
     "apiClient": [
       "{workspaceRoot}/dist/apps/api/openapi.json",
-      "{workspaceRoot}/apps/daemon/pkg/toolbox/docs/swagger.json",
       { "env": "DEFAULT_PACKAGE_VERSION" },
       { "dependentTasksOutputFiles": "**/*", "transitive": true }
     ],
@@ -62,7 +61,7 @@
       }
     },
     { "plugin": "@nx/eslint/plugin", "options": { "targetName": "lint" } },
-    { "plugin": "@nx/jest/plugin", "options": { "targetName": "test" }, "exclude": ["apps/daytona-e2e/**/*"] },
+    { "plugin": "@nx/jest/plugin", "options": { "targetName": "test" }, "exclude": ["apps/e2e/**/*"] },
     {
       "plugin": "@nx/vite/plugin",
       "options": {
@@ -78,14 +77,15 @@
       }
     },
     {
-      "plugin": "@nx/react/router-plugin",
+      "plugin": "@nx/next/plugin",
+      "exclude": ["guides/**/*", "examples/**/*"],
       "options": {
         "buildTargetName": "build",
+        "serveTargetName": "serve",
         "devTargetName": "dev",
         "startTargetName": "start",
-        "watchDepsTargetName": "watch-deps",
-        "buildDepsTargetName": "build-deps",
-        "typecheckTargetName": "typecheck"
+        "typecheckTargetName": "typecheck",
+        "testTargetName": "test"
       }
     }
   ],
