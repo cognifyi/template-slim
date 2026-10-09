@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   docker-build:
-    if: (github.repository == 'daytonaio/daytona' || github.repository == 'cognifyi/cogbox') && github.event.pull_request.head.repo.full_name == github.repository
+    if: github.event.pull_request.head.repo.full_name == github.repository
     name: Docker build
     runs-on: ubuntu-latest
     timeout-minutes: 40
@@ -32,8 +32,6 @@ jobs:
         uses: ./.github/actions/setup-toolchain
         with:
           install-python: 'false'
-          install-ruby: 'false'
-          install-java: 'false'
           install-poetry: 'false'
           install-swag: 'false'
           run-poetry-install: 'false'
@@ -48,15 +46,10 @@ jobs:
         uses: useblacksmith/setup-docker-builder@ab5c1da94f53f5cd75c1038092aa276dddfccbba # v1.9.0
 
       - name: Build all Docker targets
-        # sandbox, sandbox-slim and sandbox-gpu excluded: sandbox/sandbox-slim's base
-        # mcr.microsoft.com/devcontainers/python is anonymous-pulled from GHA runners and
-        # flakes with 403 Forbidden; sandbox-gpu builds FROM the sandbox image (large, GPU
-        # oriented, amd64-only). Sandbox image validation happens in the default image
-        # publish workflow on release dispatch.
         run: |
           yarn nx run-many \
             --target=docker \
+            --projects=api,web,worker \
             --configuration=pr-build \
-            --exclude=sandbox,sandbox-slim,sandbox-gpu \
             --parallel=2 \
             --nxBail=true

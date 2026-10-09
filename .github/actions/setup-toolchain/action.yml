@@ -1,5 +1,5 @@
 name: Setup Toolchain
-description: Shared setup for Go, Node, Python, Ruby, Java and project dependencies
+description: Shared setup for Go, Node, Python and project dependencies
 
 inputs:
   install-go:
@@ -15,11 +15,11 @@ inputs:
     description: Install Python
     default: 'true'
   install-ruby:
-    description: Install Ruby
-    default: 'true'
+    description: Install Ruby (unsupported in the slim template)
+    default: 'false'
   install-java:
-    description: Install Java
-    default: 'true'
+    description: Install Java (unsupported in the slim template)
+    default: 'false'
   install-poetry:
     description: Install Poetry
     default: 'true'
@@ -143,5 +143,5 @@ runs:
       if: inputs.run-go-work-sync == 'true'
       shell: bash
       run: |
-        GONOSUMDB=github.com/cognifyi/cogbox go work sync
+        GONOSUMDB=github.com/${{ github.repository }} go work sync
         go env -w GOFLAGS="-buildvcs=false"

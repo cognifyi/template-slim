@@ -1,0 +1,25 @@
+# E2E infrastructure: Postgres + Redis for the API under test.
+# The API (port 3001) and web (port 3000) are started by the workflow
+# (nx serve), not here — this file only provides stateful dependencies.
+services:
+  dex:
+    image: dexidp/dex:v2.42.0
+    volumes:
+      - ../../.devcontainer/dex/config.yaml:/etc/dex/config.yaml
+    command: ['dex', 'serve', '/etc/dex/config.yaml']
+    ports:
+      - '5556:5556'
+
+  db:
+    image: postgres:18
+    environment:
+      - POSTGRES_PASSWORD=pass
+      - POSTGRES_USER=user
+      - POSTGRES_DB=app
+    ports:
+      - '5432:5432'
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - '6379:6379'

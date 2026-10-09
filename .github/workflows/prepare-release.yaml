@@ -15,7 +15,6 @@ env:
 
 jobs:
   prepare:
-    if: github.repository == 'daytonaio/daytona' || github.repository == 'cognifyi/cogbox'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -43,8 +42,8 @@ jobs:
       - name: Configure git
         run: |
           git config --global --add safe.directory $GITHUB_WORKSPACE
-          git config --global user.name "Daytona Release Bot"
-          git config --global user.email "daytona-release@users.noreply.github.com"
+          git config --global user.name "TemplateSlim Release Bot"
+          git config --global user.email "template-slim-release@users.noreply.github.com"
 
       - name: Create release branch
         run: |

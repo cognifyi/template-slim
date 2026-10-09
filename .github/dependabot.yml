@@ -110,19 +110,10 @@ updates:
   # security-only updates and never version updates, so they drift.
   - package-ecosystem: gomod
     directories:
-      - "/apps/cli"
-      - "/apps/daemon"
-      - "/apps/daytona-e2e"
-      - "/apps/otel-collector/exporter"
-      - "/apps/proxy"
-      - "/apps/runner"
-      - "/apps/snapshot-manager"
-      - "/apps/ssh-gateway"
+      - "/apps/worker"
       - "/libs/api-client-go"
       - "/libs/common-go"
-      - "/libs/computer-use"
       - "/libs/sdk-go"
-      - "/libs/toolbox-api-client-go"
     schedule:
       interval: weekly
       day: monday
