@@ -6,7 +6,9 @@
   "targets": {
     "docs": {
       "executor": "nx:run-commands",
-      "outputs": ["{workspaceRoot}/apps/docs/src/content/docs/en/typescript-sdk/**/*"],
+      "outputs": [
+        "{workspaceRoot}/apps/docs/src/content/docs/en/typescript-sdk/**/*"
+      ],
       "options": {
         "cwd": "{projectRoot}",
         "command": "npm run docs"
@@ -17,7 +19,10 @@
       "cache": true,
       "inputs": [
         "default",
-        { "dependentTasksOutputFiles": "**/*", "transitive": true }
+        {
+          "dependentTasksOutputFiles": "**/*",
+          "transitive": true
+        }
       ],
       "outputs": [],
       "options": {
@@ -27,7 +32,9 @@
       "dependsOn": [
         {
           "target": "build",
-          "projects": ["api-client"]
+          "projects": [
+            "api-client"
+          ]
         }
       ]
     },
@@ -40,22 +47,25 @@
       "dependsOn": [
         {
           "target": "build",
-          "projects": ["api-client"]
+          "projects": [
+            "api-client"
+          ]
         }
       ]
     },
-    "test:runtime": {
-      "executor": "nx:run-commands",
-      "options": {
-        "cwd": "{projectRoot}/runtime-tests",
-        "command": "bash run-all.sh"
-      },
-      "dependsOn": ["build"]
-    },
     "build": {
       "executor": "nx:run-commands",
-      "inputs": ["default", "{projectRoot}/package.json", { "dependentTasksOutputFiles": "**/*", "transitive": true }],
-      "outputs": ["{workspaceRoot}/dist/libs/sdk-typescript"],
+      "inputs": [
+        "default",
+        "{projectRoot}/package.json",
+        {
+          "dependentTasksOutputFiles": "**/*",
+          "transitive": true
+        }
+      ],
+      "outputs": [
+        "{workspaceRoot}/dist/libs/sdk-typescript"
+      ],
       "options": {
         "cwd": "{projectRoot}",
         "commands": [
@@ -65,7 +75,10 @@
         ],
         "parallel": false
       },
-      "dependsOn": ["build-cjs", "build-esm"]
+      "dependsOn": [
+        "build-cjs",
+        "build-esm"
+      ]
     },
     "build-cjs": {
       "executor": "@nx/js:tsc",
@@ -75,32 +88,45 @@
         "packageJson": "{projectRoot}/package.json",
         "main": "{projectRoot}/src/index.ts",
         "updateBuildableProjectDepsInPackageJson": true,
-        "assets": ["{projectRoot}/README.md"]
+        "assets": [
+          "{projectRoot}/README.md"
+        ]
       },
       "dependsOn": [
         {
           "target": "build",
-          "projects": ["api-client"]
+          "projects": [
+            "api-client"
+          ]
         },
         "set-version"
       ]
     },
     "build-esm": {
       "executor": "@nx/js:tsc",
-      "inputs": ["default", "{projectRoot}/package.json"],
-      "outputs": ["{options.outputPath}"],
+      "inputs": [
+        "default",
+        "{projectRoot}/package.json"
+      ],
+      "outputs": [
+        "{options.outputPath}"
+      ],
       "options": {
         "outputPath": "dist/libs/sdk-typescript/esm",
         "tsConfig": "{projectRoot}/tsconfig.esm.json",
         "packageJson": "{projectRoot}/package.json",
         "main": "{projectRoot}/src/index.ts",
         "updateBuildableProjectDepsInPackageJson": true,
-        "assets": ["{projectRoot}/README.md"]
+        "assets": [
+          "{projectRoot}/README.md"
+        ]
       },
       "dependsOn": [
         {
           "target": "build",
-          "projects": ["api-client"]
+          "projects": [
+            "api-client"
+          ]
         },
         "set-version"
       ]
@@ -112,8 +138,18 @@
         "command": "if [ -n \"$NPM_PKG_VERSION\" ] || [ -n \"$DEFAULT_PACKAGE_VERSION\" ]; then VER=${NPM_PKG_VERSION:-$DEFAULT_PACKAGE_VERSION}; npm version \"$VER\" --allow-same-version --no-git-tag-version && echo \"Changed version to $VER\"; else echo \"Using version from package.json\"; fi"
       },
       "cache": true,
-      "inputs": ["{projectRoot}/package.json", { "env": "NPM_PKG_VERSION" }, { "env": "DEFAULT_PACKAGE_VERSION" }],
-      "outputs": ["{projectRoot}/package.json"]
+      "inputs": [
+        "{projectRoot}/package.json",
+        {
+          "env": "NPM_PKG_VERSION"
+        },
+        {
+          "env": "DEFAULT_PACKAGE_VERSION"
+        }
+      ],
+      "outputs": [
+        "{projectRoot}/package.json"
+      ]
     },
     "publish": {
       "executor": "nx:run-commands",
@@ -132,7 +168,9 @@
         "build",
         {
           "target": "publish",
-          "projects": ["api-client"]
+          "projects": [
+            "api-client"
+          ]
         }
       ]
     }

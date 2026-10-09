@@ -59,14 +59,6 @@ describe('[AUTH] OrganizationController', () => {
     expectArrayMatch(getAuthContextGuards(OrganizationController, methodName), [UserAuthContextGuard])
   })
 
-  it('setDefaultRegion', () => {
-    const methodName = trackMethod('setDefaultRegion')
-    expect(isPublicEndpoint(OrganizationController, methodName)).toBe(false)
-    expectArrayMatch(getAllowedAuthStrategies(OrganizationController, methodName), [AuthStrategyType.JWT])
-    expectArrayMatch(getAuthContextGuards(OrganizationController, methodName), [OrganizationAuthContextGuard])
-    expect(getRequiredOrganizationMemberRole(OrganizationController, methodName)).toBe(OrganizationMemberRole.OWNER)
-  })
-
   it('findAll', () => {
     const methodName = trackMethod('findAll')
     expect(isPublicEndpoint(OrganizationController, methodName)).toBe(false)
@@ -91,15 +83,6 @@ describe('[AUTH] OrganizationController', () => {
     expect(getRequiredOrganizationMemberRole(OrganizationController, methodName)).toBe(OrganizationMemberRole.OWNER)
   })
 
-  it('getUsageOverview', () => {
-    const methodName = trackMethod('getUsageOverview')
-    expect(isPublicEndpoint(OrganizationController, methodName)).toBe(false)
-    expectArrayMatch(getAllowedAuthStrategies(OrganizationController, methodName), [AuthStrategyType.JWT])
-    expectArrayMatch(getAuthContextGuards(OrganizationController, methodName), [OrganizationAuthContextGuard])
-    expect(getRequiredOrganizationMemberRole(OrganizationController, methodName)).toBeUndefined()
-    expect(getRequiredOrganizationResourcePermissions(OrganizationController, methodName)).toBeUndefined()
-  })
-
   it('leave', () => {
     const methodName = trackMethod('leave')
     expect(isPublicEndpoint(OrganizationController, methodName)).toBe(false)
@@ -111,14 +94,6 @@ describe('[AUTH] OrganizationController', () => {
 
   it('updateOrganizationQuota', () => {
     const methodName = trackMethod('updateOrganizationQuota')
-    expect(isPublicEndpoint(OrganizationController, methodName)).toBe(false)
-    expectArrayMatch(getAllowedAuthStrategies(OrganizationController, methodName), [AuthStrategyType.API_KEY])
-    expectArrayMatch(getAuthContextGuards(OrganizationController, methodName), [])
-    expect(getRequiredSystemRole(OrganizationController, methodName)).toBe(SystemRole.ADMIN)
-  })
-
-  it('updateOrganizationRegionQuota', () => {
-    const methodName = trackMethod('updateOrganizationRegionQuota')
     expect(isPublicEndpoint(OrganizationController, methodName)).toBe(false)
     expectArrayMatch(getAllowedAuthStrategies(OrganizationController, methodName), [AuthStrategyType.API_KEY])
     expectArrayMatch(getAuthContextGuards(OrganizationController, methodName), [])
@@ -139,13 +114,6 @@ describe('[AUTH] OrganizationController', () => {
     expectArrayMatch(getAllowedAuthStrategies(OrganizationController, methodName), [AuthStrategyType.API_KEY])
     expectArrayMatch(getAuthContextGuards(OrganizationController, methodName), [])
     expect(getRequiredSystemRole(OrganizationController, methodName)).toBe(SystemRole.ADMIN)
-  })
-
-  it('getOtelConfigBySandboxAuthToken', () => {
-    const methodName = trackMethod('getOtelConfigBySandboxAuthToken')
-    expect(isPublicEndpoint(OrganizationController, methodName)).toBe(false)
-    expectArrayMatch(getAllowedAuthStrategies(OrganizationController, methodName), [AuthStrategyType.API_KEY])
-    expectArrayMatch(getAuthContextGuards(OrganizationController, methodName), [OtelCollectorAuthContextGuard])
   })
 
   it('getOtelConfig', () => {
@@ -169,14 +137,6 @@ describe('[AUTH] OrganizationController', () => {
     expectArrayMatch(getAllowedAuthStrategies(OrganizationController, methodName), [AuthStrategyType.JWT])
     expectArrayMatch(getAuthContextGuards(OrganizationController, methodName), [OrganizationAuthContextGuard])
     expect(getRequiredOrganizationMemberRole(OrganizationController, methodName)).toBe(OrganizationMemberRole.OWNER)
-  })
-
-  it('updateSandboxDefaultLimitedNetworkEgress', () => {
-    const methodName = trackMethod('updateSandboxDefaultLimitedNetworkEgress')
-    expect(isPublicEndpoint(OrganizationController, methodName)).toBe(false)
-    expectArrayMatch(getAllowedAuthStrategies(OrganizationController, methodName), [AuthStrategyType.API_KEY])
-    expectArrayMatch(getAuthContextGuards(OrganizationController, methodName), [])
-    expect(getRequiredSystemRole(OrganizationController, methodName)).toBe(SystemRole.ADMIN)
   })
 
   it('updateExperimentalConfig', () => {

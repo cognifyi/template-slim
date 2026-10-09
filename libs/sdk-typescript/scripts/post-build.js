@@ -16,7 +16,7 @@ const generatedDeps = readJson(path.join(cjsDir, 'package.json')).dependencies ?
 
 const pkg = readJson(path.join(sourceDir, 'package.json'))
 pkg.dependencies = { ...generatedDeps }
-for (const name of ['api-client', 'toolbox-api-client']) {
+for (const name of ['api-client']) {
   const distPkg = readJson(path.join(workspaceRoot, 'dist', 'libs', name, 'package.json'))
   pkg.dependencies[`@template-slim/${name}`] = distPkg.version
 }

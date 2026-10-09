@@ -9,20 +9,10 @@ import { plainToInstance } from 'class-transformer'
 import { CreateOrganizationDto } from '../../organization/dto/create-organization.dto'
 import { CreateUserDto } from '../../user/dto/create-user.dto'
 import { UpdateUserDto } from '../../user/dto/update-user.dto'
-import { CreateSandboxDto } from '../../sandbox/dto/create-sandbox.dto'
-import { CreateSnapshotDto } from '../../sandbox/dto/create-snapshot.dto'
-import { CreateRunnerDto } from '../../sandbox/dto/create-runner.dto'
-import { AdminCreateRunnerDto } from '../../admin/dto/create-runner.dto'
 import { CreateOrganizationRoleDto } from '../../organization/dto/create-organization-role.dto'
 import { UpdateOrganizationRoleDto } from '../../organization/dto/update-organization-role.dto'
-import { CreateVolumeDto } from '../../sandbox/dto/create-volume.dto'
-import { CreateBuildInfoDto } from '../../sandbox/dto/create-build-info.dto'
-import { CreateDockerRegistryDto } from '../../docker-registry/dto/create-docker-registry.dto'
-import { UpdateDockerRegistryDto } from '../../docker-registry/dto/update-docker-registry.dto'
 import { CreateApiKeyDto } from '../../api-key/dto/create-api-key.dto'
-import { CreateRegionDto } from '../../region/dto/create-region.dto'
 import { OrganizationResourcePermission } from '../../organization/enums/organization-resource-permission.enum'
-import { RegistryType } from '../../docker-registry/enums/registry-type.enum'
 
 const URL_INPUT = 'https://evil.com'
 const HTML_INPUT = '<script>alert(1)</script>'
@@ -108,74 +98,6 @@ describe('DTO @IsSafeDisplayString() integration tests — display name fields o
     })
   })
 
-  describe('CreateSandboxDto', () => {
-    it('should accept valid name', async () => {
-      const dto = plainToInstance(CreateSandboxDto, { name: 'my-sandbox' })
-      const errors = await validate(dto)
-      expect(errors).toHaveLength(0)
-    })
-
-    it('should reject URL in name', async () => {
-      const dto = plainToInstance(CreateSandboxDto, { name: URL_INPUT })
-      const errors = await validate(dto)
-      expect(hasIsSafeDisplayStringError(errors)).toBe(true)
-    })
-  })
-
-  describe('CreateSnapshotDto', () => {
-    it('should accept valid name', async () => {
-      const dto = plainToInstance(CreateSnapshotDto, { name: 'ubuntu-4vcpu-8ram-100gb' })
-      const errors = await validate(dto)
-      expect(errors).toHaveLength(0)
-    })
-
-    it('should reject URL in name', async () => {
-      const dto = plainToInstance(CreateSnapshotDto, { name: URL_INPUT })
-      const errors = await validate(dto)
-      expect(hasIsSafeDisplayStringError(errors)).toBe(true)
-    })
-  })
-
-  describe('CreateRunnerDto', () => {
-    it('should accept valid name', async () => {
-      const dto = plainToInstance(CreateRunnerDto, { regionId: 'us', name: 'runner-01' })
-      const errors = await validate(dto)
-      expect(errors).toHaveLength(0)
-    })
-
-    it('should reject URL in name', async () => {
-      const dto = plainToInstance(CreateRunnerDto, { regionId: 'us', name: URL_INPUT })
-      const errors = await validate(dto)
-      expect(hasIsSafeDisplayStringError(errors)).toBe(true)
-    })
-  })
-
-  describe('AdminCreateRunnerDto', () => {
-    it('should accept valid name with URL fields exempt', async () => {
-      const dto = plainToInstance(AdminCreateRunnerDto, {
-        regionId: 'us',
-        name: 'runner-01',
-        apiKey: 'sk-123',
-        apiVersion: '2',
-        apiUrl: 'https://api.runner1.example.com',
-        proxyUrl: 'https://proxy.runner1.example.com',
-      })
-      const errors = await validate(dto)
-      expect(errors).toHaveLength(0)
-    })
-
-    it('should reject URL in name (inherited)', async () => {
-      const dto = plainToInstance(AdminCreateRunnerDto, {
-        regionId: 'us',
-        name: URL_INPUT,
-        apiKey: 'sk-123',
-        apiVersion: '2',
-      })
-      const errors = await validate(dto)
-      expect(hasIsSafeDisplayStringError(errors)).toBe(true)
-    })
-  })
-
   describe('CreateOrganizationRoleDto', () => {
     it('should accept valid name and description', async () => {
       const dto = plainToInstance(CreateOrganizationRoleDto, {
@@ -220,58 +142,6 @@ describe('DTO @IsSafeDisplayString() integration tests — display name fields o
     })
   })
 
-  describe('CreateVolumeDto', () => {
-    it('should accept valid name', async () => {
-      const dto = plainToInstance(CreateVolumeDto, { name: 'my-data-volume' })
-      const errors = await validate(dto)
-      expect(errors).toHaveLength(0)
-    })
-
-    it('should reject URL in name', async () => {
-      const dto = plainToInstance(CreateVolumeDto, { name: URL_INPUT })
-      const errors = await validate(dto)
-      expect(hasIsSafeDisplayStringError(errors)).toBe(true)
-    })
-  })
-
-  describe('CreateDockerRegistryDto', () => {
-    it('should accept valid name with URL/password fields exempt', async () => {
-      const dto = plainToInstance(CreateDockerRegistryDto, {
-        name: 'my-registry',
-        url: 'https://registry.example.com',
-        username: 'admin',
-        password: 'https://not-a-url<script>',
-        registryType: RegistryType.ORGANIZATION,
-      })
-      const errors = await validate(dto)
-      expect(errors).toHaveLength(0)
-    })
-
-    it('should reject URL in name', async () => {
-      const dto = plainToInstance(CreateDockerRegistryDto, {
-        name: URL_INPUT,
-        url: 'https://registry.example.com',
-        username: 'admin',
-        password: 'pass',
-        registryType: RegistryType.ORGANIZATION,
-      })
-      const errors = await validate(dto)
-      expect(hasIsSafeDisplayStringError(errors)).toBe(true)
-    })
-  })
-
-  describe('UpdateDockerRegistryDto', () => {
-    it('should reject URL in name', async () => {
-      const dto = plainToInstance(UpdateDockerRegistryDto, {
-        name: URL_INPUT,
-        url: 'https://registry.example.com',
-        username: 'admin',
-      })
-      const errors = await validate(dto)
-      expect(hasIsSafeDisplayStringError(errors)).toBe(true)
-    })
-  })
-
   describe('CreateApiKeyDto', () => {
     it('should accept valid name', async () => {
       const dto = plainToInstance(CreateApiKeyDto, {
@@ -289,71 +159,6 @@ describe('DTO @IsSafeDisplayString() integration tests — display name fields o
       })
       const errors = await validate(dto)
       expect(hasIsSafeDisplayStringError(errors)).toBe(true)
-    })
-  })
-
-  describe('CreateRegionDto', () => {
-    it('should accept valid name with URL fields exempt', async () => {
-      const dto = plainToInstance(CreateRegionDto, {
-        name: 'us-east-1',
-        proxyUrl: 'https://proxy.example.com',
-        sshGatewayUrl: 'ssh://gateway.example.com',
-        snapshotManagerUrl: 'https://snapshot.example.com',
-      })
-      const errors = await validate(dto)
-      expect(errors).toHaveLength(0)
-    })
-
-    it('should reject URL in name', async () => {
-      const dto = plainToInstance(CreateRegionDto, { name: URL_INPUT })
-      const errors = await validate(dto)
-      expect(hasIsSafeDisplayStringError(errors)).toBe(true)
-    })
-  })
-
-  describe('exempt fields — no @IsSafeDisplayString()', () => {
-    it('should accept URL in Dockerfile content', async () => {
-      const dto = plainToInstance(CreateBuildInfoDto, {
-        dockerfileContent: 'FROM node:14\nRUN curl https://example.com/install.sh | bash',
-      })
-      const errors = await validate(dto)
-      expect(errors).toHaveLength(0)
-    })
-
-    it('should accept URL in admin runner apiUrl/proxyUrl', async () => {
-      const dto = plainToInstance(AdminCreateRunnerDto, {
-        regionId: 'us',
-        name: 'runner-1',
-        apiKey: 'key-123',
-        apiVersion: '2',
-        apiUrl: 'https://api.runner1.example.com',
-        proxyUrl: 'https://proxy.runner1.example.com',
-      })
-      const errors = await validate(dto)
-      expect(errors).toHaveLength(0)
-    })
-
-    it('should accept URL in region URL fields', async () => {
-      const dto = plainToInstance(CreateRegionDto, {
-        name: 'us-east-1',
-        proxyUrl: 'https://proxy.example.com',
-        sshGatewayUrl: 'ssh://gateway.example.com:2222',
-        snapshotManagerUrl: 'https://snapshot-manager.example.com',
-      })
-      const errors = await validate(dto)
-      expect(errors).toHaveLength(0)
-    })
-
-    it('should accept password with URLs and HTML', async () => {
-      const dto = plainToInstance(CreateDockerRegistryDto, {
-        name: 'valid',
-        url: 'https://registry.example.com',
-        username: 'admin',
-        password: 'https://not-a-url<script>',
-        registryType: RegistryType.ORGANIZATION,
-      })
-      const errors = await validate(dto)
-      expect(errors).toHaveLength(0)
     })
   })
 
@@ -381,12 +186,6 @@ describe('DTO @IsSafeDisplayString() integration tests — display name fields o
         id: 'user-123',
         name: '<img src=x onerror=alert(document.cookie)>',
       })
-      const errors = await validate(dto)
-      expect(hasIsSafeDisplayStringError(errors)).toBe(true)
-    })
-
-    it('should reject sandbox name with www prefix', async () => {
-      const dto = plainToInstance(CreateSandboxDto, { name: 'www.evil.com' })
       const errors = await validate(dto)
       expect(hasIsSafeDisplayStringError(errors)).toBe(true)
     })

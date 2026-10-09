@@ -6,8 +6,7 @@
     "outDir": "../../dist/libs/sdk-typescript/cjs",
     "baseUrl": ".",
     "paths": {
-      "@template-slim/api-client": ["../../dist/libs/api-client/src"],
-      "@template-slim/toolbox-api-client": ["../../dist/libs/toolbox-api-client/src"]
+      "@template-slim/api-client": ["../../dist/libs/api-client/src"]
     }
   }
 }
