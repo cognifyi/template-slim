@@ -9,14 +9,10 @@ import {
   Injectable,
   NotFoundException,
   Logger,
-  OnModuleInit,
-  OnApplicationShutdown,
-  ConflictException,
 } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { EntityManager, In, Not, Repository } from 'typeorm'
+import { EntityManager, Repository } from 'typeorm'
 import { CreateOrganizationInternalDto } from '../dto/create-organization.internal.dto'
-import { CreateOrganizationRegionQuotaDto } from '../dto/create-organization-region-quota.dto'
 import { UpdateOrganizationQuotaDto } from '../dto/update-organization-quota.dto'
 import { Organization } from '../entities/organization.entity'
 import { OrganizationUser } from '../entities/organization-user.entity'
@@ -25,79 +21,31 @@ import { OnAsyncEvent } from '../../common/decorators/on-async-event.decorator'
 import { UserEvents } from '../../user/constants/user-events.constant'
 import { UserCreatedEvent } from '../../user/events/user-created.event'
 import { UserDeletedEvent } from '../../user/events/user-deleted.event'
-import { SandboxState } from '../../sandbox/enums/sandbox-state.enum'
 import { EventEmitter2 } from '@nestjs/event-emitter'
 import { OrganizationEvents } from '../constants/organization-events.constant'
 import { CreateOrganizationQuotaDto } from '../dto/create-organization-quota.dto'
 import { UserEmailVerifiedEvent } from '../../user/events/user-email-verified.event'
-import { Cron, CronExpression } from '@nestjs/schedule'
-import { RedisLockProvider } from '../../sandbox/common/redis-lock.provider'
-import { OrganizationSuspendedSandboxStoppedEvent } from '../events/organization-suspended-sandbox-stopped.event'
-import { SandboxDesiredState } from '../../sandbox/enums/sandbox-desired-state.enum'
 import { SystemRole } from '../../user/enums/system-role.enum'
-import { SnapshotState } from '../../sandbox/enums/snapshot-state.enum'
-import { OrganizationSuspendedSnapshotDeactivatedEvent } from '../events/organization-suspended-snapshot-deactivated.event'
-import { TrackJobExecution } from '../../common/decorators/track-job-execution.decorator'
-import { TrackableJobExecutions } from '../../common/interfaces/trackable-job-executions'
-import { setTimeout } from 'timers/promises'
 import { TypedConfigService } from '../../config/typed-config.service'
 import { LogExecution } from '../../common/decorators/log-execution.decorator'
+import { TrackJobExecution } from '../../common/decorators/track-job-execution.decorator'
 import { WithInstrumentation } from '../../common/decorators/otel.decorator'
-import { RegionQuota } from '../entities/region-quota.entity'
-import { UpdateOrganizationRegionQuotaDto } from '../dto/update-organization-region-quota.dto'
-import { SandboxClass } from '../../sandbox/enums/sandbox-class.enum'
-import { RegionService } from '../../region/services/region.service'
-import { Region } from '../../region/entities/region.entity'
-import { RegionQuotaDto } from '../dto/region-quota.dto'
-import { RegionType } from '../../region/enums/region-type.enum'
-import { RegionDto } from '../../region/dto/region.dto'
 import { EncryptionService } from '../../encryption/encryption.service'
 import { OtelConfigDto } from '../dto/otel-config.dto'
-import { sandboxLookupCacheKeyByAuthToken } from '../../sandbox/utils/sandbox-lookup-cache.util'
-import { SandboxRepository } from '../../sandbox/repositories/sandbox.repository'
-import { SnapshotRepository } from '../../sandbox/repositories/snapshot.repository'
-import { InjectRedis } from '@nestjs-modules/ioredis'
-import Redis from 'ioredis'
 
 @Injectable()
-export class OrganizationService implements OnModuleInit, TrackableJobExecutions, OnApplicationShutdown {
-  activeJobs = new Set<string>()
+export class OrganizationService {
   private readonly logger = new Logger(OrganizationService.name)
   private defaultOrganizationQuota: CreateOrganizationQuotaDto
-  private defaultSandboxLimitedNetworkEgress: boolean
 
   constructor(
     @InjectRepository(Organization)
     private readonly organizationRepository: Repository<Organization>,
-    private readonly sandboxRepository: SandboxRepository,
-    private readonly snapshotRepository: SnapshotRepository,
     private readonly eventEmitter: EventEmitter2,
     private readonly configService: TypedConfigService,
-    private readonly redisLockProvider: RedisLockProvider,
-    @InjectRepository(RegionQuota)
-    private readonly regionQuotaRepository: Repository<RegionQuota>,
-    @InjectRepository(Region)
-    private readonly regionRepository: Repository<Region>,
-    private readonly regionService: RegionService,
     private readonly encryptionService: EncryptionService,
-    @InjectRedis() private readonly redis: Redis,
   ) {
     this.defaultOrganizationQuota = this.configService.getOrThrow('defaultOrganizationQuota')
-    this.defaultSandboxLimitedNetworkEgress = this.configService.getOrThrow(
-      'organizationSandboxDefaultLimitedNetworkEgress',
-    )
-  }
-
-  async onApplicationShutdown() {
-    //  wait for all active jobs to finish
-    while (this.activeJobs.size > 0) {
-      this.logger.log(`Waiting for ${this.activeJobs.size} active jobs to finish`)
-      await setTimeout(1000)
-    }
-  }
-
-  async onModuleInit(): Promise<void> {
-    await this.stopSuspendedOrganizationSandboxes()
   }
 
   async create(
@@ -130,35 +78,6 @@ export class OrganizationService implements OnModuleInit, TrackableJobExecutions
       where: { id: organizationId },
     })
   }
-
-  async findBySandboxId(sandboxId: string): Promise<Organization | null> {
-    const sandbox = await this.sandboxRepository.findOne({
-      where: { id: sandboxId },
-    })
-
-    if (!sandbox) {
-      return null
-    }
-
-    return this.organizationRepository.findOne({ where: { id: sandbox.organizationId } })
-  }
-
-  async findBySandboxAuthToken(authToken: string): Promise<Organization | null> {
-    const sandbox = await this.sandboxRepository.findOne({
-      where: { authToken },
-      cache: {
-        id: sandboxLookupCacheKeyByAuthToken({ authToken }),
-        milliseconds: 10_000,
-      },
-    })
-
-    if (!sandbox) {
-      return null
-    }
-
-    return this.organizationRepository.findOne({ where: { id: sandbox.organizationId } })
-  }
-
   async findPersonal(userId: string): Promise<Organization> {
     return this.findPersonalWithEntityManager(this.organizationRepository.manager, userId)
   }
@@ -200,201 +119,6 @@ export class OrganizationService implements OnModuleInit, TrackableJobExecutions
 
     await this.organizationRepository.save(organization)
   }
-
-  async createRegionQuota(
-    organizationId: string,
-    regionId: string,
-    createDto: CreateOrganizationRegionQuotaDto,
-  ): Promise<RegionQuotaDto> {
-    const organization = await this.organizationRepository.findOne({ where: { id: organizationId } })
-    if (!organization) {
-      throw new NotFoundException(`Organization with ID ${organizationId} not found`)
-    }
-
-    const region = await this.regionService.findOne(regionId)
-    if (!region) {
-      throw new NotFoundException(`Region with ID ${regionId} not found`)
-    }
-    if (!region.enforceQuotas) {
-      throw new BadRequestException(`Region ${regionId} does not enforce quotas`)
-    }
-
-    const existing = await this.regionQuotaRepository.findOne({
-      where: { organizationId, regionId, sandboxClass: createDto.sandboxClass },
-    })
-    if (existing) {
-      throw new ConflictException(
-        `Region quota for organization ${organizationId}, region ${regionId}, sandbox class ${createDto.sandboxClass} already exists`,
-      )
-    }
-
-    const regionQuota = new RegionQuota({
-      organizationId,
-      regionId,
-      sandboxClass: createDto.sandboxClass,
-      totalCpuQuota: createDto.totalCpuQuota,
-      totalMemoryQuota: createDto.totalMemoryQuota,
-      totalDiskQuota: createDto.totalDiskQuota,
-      totalGpuQuota: createDto.totalGpuQuota,
-      allowedGpuTypes: createDto.allowedGpuTypes ?? null,
-      maxCpuPerSandbox: createDto.maxCpuPerSandbox ?? null,
-      maxMemoryPerSandbox: createDto.maxMemoryPerSandbox ?? null,
-      maxDiskPerSandbox: createDto.maxDiskPerSandbox ?? null,
-      maxDiskPerNonEphemeralSandbox: createDto.maxDiskPerNonEphemeralSandbox ?? null,
-      maxCpuPerGpuSandbox: createDto.maxCpuPerGpuSandbox ?? null,
-      maxMemoryPerGpuSandbox: createDto.maxMemoryPerGpuSandbox ?? null,
-      maxDiskPerGpuSandbox: createDto.maxDiskPerGpuSandbox ?? null,
-    })
-
-    const saved = await this.regionQuotaRepository.save(regionQuota)
-    return new RegionQuotaDto(saved)
-  }
-
-  async updateRegionQuota(
-    organizationId: string,
-    regionId: string,
-    updateDto: UpdateOrganizationRegionQuotaDto,
-  ): Promise<void> {
-    const sandboxClass = updateDto.sandboxClass ?? this.configService.getOrThrow('defaultSandboxClass')
-
-    const regionQuota = await this.regionQuotaRepository.findOne({
-      where: { organizationId, regionId, sandboxClass },
-    })
-    if (!regionQuota) {
-      throw new NotFoundException(
-        `Region quota for organization ${organizationId}, region ${regionId}, sandbox class ${sandboxClass} not found`,
-      )
-    }
-
-    regionQuota.totalCpuQuota = updateDto.totalCpuQuota ?? regionQuota.totalCpuQuota
-    regionQuota.totalMemoryQuota = updateDto.totalMemoryQuota ?? regionQuota.totalMemoryQuota
-    regionQuota.totalDiskQuota = updateDto.totalDiskQuota ?? regionQuota.totalDiskQuota
-    regionQuota.totalGpuQuota = updateDto.totalGpuQuota ?? regionQuota.totalGpuQuota
-
-    if (updateDto.allowedGpuTypes !== undefined) {
-      regionQuota.allowedGpuTypes = updateDto.allowedGpuTypes
-    }
-
-    if (updateDto.maxCpuPerSandbox !== undefined) {
-      regionQuota.maxCpuPerSandbox = updateDto.maxCpuPerSandbox
-    }
-    if (updateDto.maxMemoryPerSandbox !== undefined) {
-      regionQuota.maxMemoryPerSandbox = updateDto.maxMemoryPerSandbox
-    }
-    if (updateDto.maxDiskPerSandbox !== undefined) {
-      regionQuota.maxDiskPerSandbox = updateDto.maxDiskPerSandbox
-    }
-    if (updateDto.maxDiskPerNonEphemeralSandbox !== undefined) {
-      regionQuota.maxDiskPerNonEphemeralSandbox = updateDto.maxDiskPerNonEphemeralSandbox
-    }
-    if (updateDto.maxCpuPerGpuSandbox !== undefined) {
-      regionQuota.maxCpuPerGpuSandbox = updateDto.maxCpuPerGpuSandbox
-    }
-    if (updateDto.maxMemoryPerGpuSandbox !== undefined) {
-      regionQuota.maxMemoryPerGpuSandbox = updateDto.maxMemoryPerGpuSandbox
-    }
-    if (updateDto.maxDiskPerGpuSandbox !== undefined) {
-      regionQuota.maxDiskPerGpuSandbox = updateDto.maxDiskPerGpuSandbox
-    }
-
-    await this.regionQuotaRepository.save(regionQuota)
-  }
-
-  async deleteRegionQuota(organizationId: string, regionId: string, sandboxClass: SandboxClass): Promise<void> {
-    const regionQuota = await this.regionQuotaRepository.findOne({
-      where: { organizationId, regionId, sandboxClass },
-    })
-    if (!regionQuota) {
-      throw new NotFoundException(
-        `Region quota for organization ${organizationId}, region ${regionId}, sandbox class ${sandboxClass} not found`,
-      )
-    }
-
-    const organization = await this.organizationRepository.findOne({ where: { id: organizationId } })
-
-    if (regionId === organization?.defaultRegionId) {
-      const defaultRegionQuotas = await this.regionQuotaRepository.count({
-        where: { organizationId, regionId: organization.defaultRegionId },
-      })
-      if (defaultRegionQuotas <= 1) {
-        throw new ConflictException(
-          `Organization must keep at least one quota for its default region (${organization.defaultRegionId})`,
-        )
-      }
-    }
-
-    await this.regionQuotaRepository.remove(regionQuota)
-  }
-
-  async getRegionQuotas(organizationId: string): Promise<RegionQuotaDto[]> {
-    const regionQuotas = await this.regionQuotaRepository.find({ where: { organizationId } })
-    return regionQuotas.map((regionQuota) => new RegionQuotaDto(regionQuota))
-  }
-
-  async getRegionQuota(
-    organizationId: string,
-    regionId: string,
-    sandboxClass: SandboxClass,
-  ): Promise<RegionQuotaDto | null> {
-    const regionQuota = await this.regionQuotaRepository.findOne({
-      where: { organizationId, regionId, sandboxClass },
-    })
-    if (!regionQuota) {
-      return null
-    }
-    return new RegionQuotaDto(regionQuota)
-  }
-
-  async getRegionQuotaBySandboxId(sandboxId: string): Promise<RegionQuotaDto | null> {
-    const sandbox = await this.sandboxRepository.findOne({
-      where: { id: sandboxId },
-    })
-    if (!sandbox) {
-      return null
-    }
-    return this.getRegionQuota(sandbox.organizationId, sandbox.region, sandbox.sandboxClass)
-  }
-
-  /**
-   * Lists all available regions for the organization.
-   *
-   * A region is available for the organization if either:
-   * - It is directly associated with the organization, or
-   * - It is not associated with any organization, but the organization has quotas allocated for the region or quotas are not enforced for the region
-   *
-   * @param organizationId - The organization ID.
-   * @returns The available regions
-   */
-  async listAvailableRegions(organizationId: string): Promise<RegionDto[]> {
-    const regions = await this.regionRepository
-      .createQueryBuilder('region')
-      .where('region."regionType" = :customRegionType AND region."organizationId" = :organizationId', {
-        customRegionType: RegionType.CUSTOM,
-        organizationId,
-      })
-      .orWhere('region."regionType" IN (:...otherRegionTypes) AND region."enforceQuotas" = false', {
-        otherRegionTypes: [RegionType.DEDICATED, RegionType.SHARED],
-      })
-      .orWhere(
-        'region."regionType" IN (:...otherRegionTypes) AND region."enforceQuotas" = true AND EXISTS (SELECT 1 FROM region_quota rq WHERE rq."regionId" = region."id" AND rq."organizationId" = :organizationId)',
-        {
-          otherRegionTypes: [RegionType.DEDICATED, RegionType.SHARED],
-          organizationId,
-        },
-      )
-      .orderBy(
-        `CASE region."regionType" 
-          WHEN '${RegionType.CUSTOM}' THEN 1 
-          WHEN '${RegionType.DEDICATED}' THEN 2 
-          WHEN '${RegionType.SHARED}' THEN 3 
-          ELSE 4 
-        END`,
-      )
-      .getMany()
-
-    return regions.map(RegionDto.fromRegion)
-  }
-
   async suspend(
     organizationId: string,
     suspensionReason?: string,
@@ -430,68 +154,6 @@ export class OrganizationService implements OnModuleInit, TrackableJobExecutions
 
     await this.organizationRepository.save(organization)
   }
-
-  async updateSandboxDefaultLimitedNetworkEgress(
-    organizationId: string,
-    sandboxDefaultLimitedNetworkEgress: boolean,
-  ): Promise<void> {
-    const organization = await this.organizationRepository.findOne({ where: { id: organizationId } })
-    if (!organization) {
-      throw new NotFoundException(`Organization with ID ${organizationId} not found`)
-    }
-    organization.sandboxLimitedNetworkEgress = sandboxDefaultLimitedNetworkEgress
-
-    await this.organizationRepository.save(organization)
-  }
-
-  /**
-   * @param organizationId - The ID of the organization.
-   * @param defaultRegionId - The ID of the region to set as the default region.
-   * @throws {NotFoundException} If the organization is not found.
-   * @throws {ConflictException} If the organization already has a default region set.
-   */
-  async setDefaultRegion(organizationId: string, defaultRegionId: string): Promise<void> {
-    const organization = await this.organizationRepository.findOne({ where: { id: organizationId } })
-    if (!organization) {
-      throw new NotFoundException(`Organization with ID ${organizationId} not found`)
-    }
-
-    if (organization.defaultRegionId) {
-      throw new ConflictException('Organization already has a default region set')
-    }
-
-    const defaultRegion = await this.validateOrganizationDefaultRegion(defaultRegionId)
-    organization.defaultRegionId = defaultRegionId
-
-    if (defaultRegion.enforceQuotas) {
-      const regionQuota = new RegionQuota({
-        organizationId: organization.id,
-        regionId: defaultRegionId,
-        sandboxClass: this.configService.getOrThrow('defaultSandboxClass'),
-        totalCpuQuota: this.defaultOrganizationQuota.totalCpuQuota,
-        totalMemoryQuota: this.defaultOrganizationQuota.totalMemoryQuota,
-        totalDiskQuota: this.defaultOrganizationQuota.totalDiskQuota,
-      })
-      if (organization.regionQuotas) {
-        organization.regionQuotas = [...organization.regionQuotas, regionQuota]
-      } else {
-        organization.regionQuotas = [regionQuota]
-      }
-    }
-
-    await this.organizationRepository.save(organization)
-
-    // OrganizationAuthContextGuard caches the org for 10s; clear it so the next request
-    // (e.g. sandbox creation immediately after setDefaultRegion) reads fresh state.
-    // Best-effort: the DB update is already committed, so don't fail the request if Redis
-    // is unavailable — the cache entry will expire within 10s anyway.
-    try {
-      await this.redis.del(`organization:${organizationId}`)
-    } catch (error) {
-      this.logger.warn(`Failed to invalidate organization cache for ${organizationId}: ${error?.message ?? error}`)
-    }
-  }
-
   async updateExperimentalConfig(
     organizationId: string,
     experimentalConfig: Record<string, any> | null,
@@ -556,12 +218,6 @@ export class OrganizationService implements OnModuleInit, TrackableJobExecutions
 
     await this.organizationRepository.save(organization)
   }
-
-  async getOtelConfigBySandboxAuthToken(sandboxAuthToken: string): Promise<OtelConfigDto | null> {
-    const organization = await this.findBySandboxAuthToken(sandboxAuthToken)
-    return this.resolveOtelConfig(organization)
-  }
-
   async getOtelConfigByOrganizationId(organizationId: string): Promise<OtelConfigDto | null> {
     const organization = await this.organizationRepository.findOne({ where: { id: organizationId } })
     return this.resolveOtelConfig(organization)
@@ -603,7 +259,6 @@ export class OrganizationService implements OnModuleInit, TrackableJobExecutions
     creatorEmailVerified: boolean,
     personal = false,
     quota: CreateOrganizationQuotaDto = this.defaultOrganizationQuota,
-    sandboxLimitedNetworkEgress: boolean = this.defaultSandboxLimitedNetworkEgress,
   ): Promise<Organization> {
     if (personal) {
       const count = await entityManager.count(Organization, {
@@ -639,35 +294,13 @@ export class OrganizationService implements OnModuleInit, TrackableJobExecutions
       organization.suspended = true
       organization.suspendedAt = new Date()
       organization.suspensionReason = 'Please verify your email address'
-    } else if (this.configService.get('billingApiUrl') && !personal) {
-      organization.suspended = true
-      organization.suspendedAt = new Date()
-      organization.suspensionReason = 'Payment method required'
     }
-
-    organization.sandboxLimitedNetworkEgress = sandboxLimitedNetworkEgress
 
     const owner = new OrganizationUser()
     owner.userId = createdBy
     owner.role = OrganizationMemberRole.OWNER
 
     organization.users = [owner]
-
-    if (createOrganizationDto.defaultRegionId) {
-      const defaultRegion = await this.validateOrganizationDefaultRegion(createOrganizationDto.defaultRegionId)
-
-      if (defaultRegion.enforceQuotas) {
-        const regionQuota = new RegionQuota({
-          organizationId: organization.id,
-          regionId: createOrganizationDto.defaultRegionId,
-          sandboxClass: this.configService.getOrThrow('defaultSandboxClass'),
-          totalCpuQuota: quota.totalCpuQuota,
-          totalMemoryQuota: quota.totalMemoryQuota,
-          totalDiskQuota: quota.totalDiskQuota,
-        })
-        organization.regionQuotas = [regionQuota]
-      }
-    }
 
     await entityManager.transaction(async (em) => {
       organization = await em.save(organization)
@@ -711,130 +344,6 @@ export class OrganizationService implements OnModuleInit, TrackableJobExecutions
 
     return organization
   }
-
-  /**
-   * @throws NotFoundException - If the region is not found or not available to the organization
-   */
-  async validateOrganizationDefaultRegion(defaultRegionId: string): Promise<Region> {
-    const region = await this.regionService.findOne(defaultRegionId)
-    if (!region || region.regionType !== RegionType.SHARED) {
-      throw new NotFoundException('Region not found')
-    }
-
-    return region
-  }
-
-  @Cron(CronExpression.EVERY_MINUTE, { name: 'stop-suspended-organization-sandboxes' })
-  @TrackJobExecution()
-  @LogExecution('stop-suspended-organization-sandboxes')
-  @WithInstrumentation()
-  async stopSuspendedOrganizationSandboxes(): Promise<void> {
-    //  lock the sync to only run one instance at a time
-    const lockKey = 'stop-suspended-organization-sandboxes'
-    if (!(await this.redisLockProvider.lock(lockKey, 60))) {
-      return
-    }
-
-    const queryResult = await this.organizationRepository
-      .createQueryBuilder('organization')
-      .select('id')
-      .where('suspended = true')
-      .andWhere(`"suspendedAt" < NOW() - INTERVAL '1 hour' * "suspensionCleanupGracePeriodHours"`)
-      .andWhere(`"suspendedAt" > NOW() - INTERVAL '7 day'`)
-      .andWhereExists(
-        this.sandboxRepository
-          .createQueryBuilder('sandbox')
-          .select('1')
-          .where(
-            `"sandbox"."organizationId" = "organization"."id" AND "sandbox"."desiredState" = '${SandboxDesiredState.STARTED}' and "sandbox"."state" NOT IN ('${SandboxState.ERROR}', '${SandboxState.BUILD_FAILED}')`,
-          ),
-      )
-      .take(100)
-      .getRawMany()
-
-    const suspendedOrganizationIds = queryResult.map((result) => result.id)
-
-    // Skip if no suspended organizations found to avoid empty IN clause
-    if (suspendedOrganizationIds.length === 0) {
-      await this.redisLockProvider.unlock(lockKey)
-      return
-    }
-
-    const sandboxes = await this.sandboxRepository.find({
-      where: {
-        organizationId: In(suspendedOrganizationIds),
-        desiredState: SandboxDesiredState.STARTED,
-        state: Not(In([SandboxState.ERROR, SandboxState.BUILD_FAILED])),
-      },
-    })
-
-    sandboxes.map((sandbox) =>
-      this.eventEmitter.emitAsync(
-        OrganizationEvents.SUSPENDED_SANDBOX_STOPPED,
-        new OrganizationSuspendedSandboxStoppedEvent(sandbox.id),
-      ),
-    )
-
-    await this.redisLockProvider.unlock(lockKey)
-  }
-
-  @Cron(CronExpression.EVERY_MINUTE, { name: 'deactivate-suspended-organization-snapshots' })
-  @TrackJobExecution()
-  @LogExecution('deactivate-suspended-organization-snapshots')
-  @WithInstrumentation()
-  async deactivateSuspendedOrganizationSnapshots(): Promise<void> {
-    //  lock the sync to only run one instance at a time
-    const lockKey = 'deactivate-suspended-organization-snapshots'
-    if (!(await this.redisLockProvider.lock(lockKey, 60))) {
-      return
-    }
-
-    const queryResult = await this.organizationRepository
-      .createQueryBuilder('organization')
-      .select('id')
-      .where('suspended = true')
-      .andWhere(`"suspendedAt" < NOW() - INTERVAL '1 hour' * "suspensionCleanupGracePeriodHours"`)
-      .andWhere(`"suspendedAt" > NOW() - INTERVAL '7 day'`)
-      .andWhereExists(
-        this.snapshotRepository
-          .createQueryBuilder('snapshot')
-          .select('1')
-          .where('snapshot.organizationId = organization.id')
-          .andWhere(`snapshot.state = '${SnapshotState.ACTIVE}'`)
-          .andWhere(`snapshot.general = false`),
-      )
-      .take(100)
-      .getRawMany()
-
-    const suspendedOrganizationIds = queryResult.map((result) => result.id)
-
-    // Skip if no suspended organizations found to avoid empty IN clause
-    if (suspendedOrganizationIds.length === 0) {
-      await this.redisLockProvider.unlock(lockKey)
-      return
-    }
-
-    const snapshotQueryResult = await this.snapshotRepository
-      .createQueryBuilder('snapshot')
-      .select('id')
-      .where('snapshot.organizationId IN (:...suspendedOrgIds)', { suspendedOrgIds: suspendedOrganizationIds })
-      .andWhere(`snapshot.state = '${SnapshotState.ACTIVE}'`)
-      .andWhere(`snapshot.general = false`)
-      .take(100)
-      .getRawMany()
-
-    const snapshotIds = snapshotQueryResult.map((result) => result.id)
-
-    snapshotIds.map((id) =>
-      this.eventEmitter.emitAsync(
-        OrganizationEvents.SUSPENDED_SNAPSHOT_DEACTIVATED,
-        new OrganizationSuspendedSnapshotDeactivatedEvent(id),
-      ),
-    )
-
-    await this.redisLockProvider.unlock(lockKey)
-  }
-
   @OnAsyncEvent({
     event: UserEvents.CREATED,
   })
@@ -850,7 +359,6 @@ export class OrganizationService implements OnModuleInit, TrackableJobExecutions
       payload.user.role === SystemRole.ADMIN ? true : payload.user.emailVerified,
       true,
       payload.personalOrganizationQuota,
-      payload.user.role === SystemRole.ADMIN ? false : undefined,
     )
   }
 

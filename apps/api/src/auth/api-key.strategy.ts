@@ -1,6 +1,6 @@
 /*
- * Copyright 2025 Daytona Platforms Inc.
- * SPDX-License-Identifier: AGPL-3.0
+ * Copyright 2025 TemplateOrg.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 import { Injectable, UnauthorizedException, Logger, OnModuleInit } from '@nestjs/common'
@@ -13,18 +13,13 @@ import { TypedConfigService } from '../config/typed-config.service'
 import { InjectRedis } from '@nestjs-modules/ioredis'
 import Redis from 'ioredis'
 import { SystemRole } from '../user/enums/system-role.enum'
-import { RunnerService } from '../sandbox/services/runner.service'
 import { generateApiKeyHash } from '../common/utils/api-key'
-import { RegionService } from '../region/services/region.service'
 import { JWT_REGEX } from './constants/jwt-regex.constant'
 import { AuthStrategyType } from './enums/auth-strategy-type.enum'
 import { RequestWithAuthMetadata } from './interfaces/request-with-auth-metadata.interface'
 import { UserAuthContext } from '../common/interfaces/user-auth-context.interface'
 import { ProxyAuthContext } from '../common/interfaces/proxy-auth-context.interface'
-import { RunnerAuthContext } from '../common/interfaces/runner-auth-context.interface'
 import { SshGatewayAuthContext } from '../common/interfaces/ssh-gateway-auth-context.interface'
-import { RegionProxyAuthContext } from '../common/interfaces/region-proxy-auth-context.interface'
-import { RegionSSHGatewayAuthContext } from '../common/interfaces/region-ssh-gateway-auth-context.interface'
 import { OtelCollectorAuthContext } from '../common/interfaces/otel-collector-auth-context.interface'
 import { HealthCheckAuthContext } from '../common/interfaces/health-check-auth-context.interface'
 import { handleAuthError } from './utils/handle-auth-error.util'
@@ -32,10 +27,7 @@ import { handleAuthError } from './utils/handle-auth-error.util'
 type ApiKeyAuthContext =
   | UserAuthContext
   | ProxyAuthContext
-  | RunnerAuthContext
   | SshGatewayAuthContext
-  | RegionProxyAuthContext
-  | RegionSSHGatewayAuthContext
   | OtelCollectorAuthContext
   | HealthCheckAuthContext
 
@@ -54,8 +46,6 @@ export class ApiKeyStrategy extends PassportStrategy(Strategy, AuthStrategyType.
     private readonly apiKeyService: ApiKeyService,
     private readonly userService: UserService,
     private readonly configService: TypedConfigService,
-    private readonly runnerService: RunnerService,
-    private readonly regionService: RegionService,
   ) {
     super({ passReqToCallback: true })
   }
@@ -153,52 +143,6 @@ export class ApiKeyStrategy extends PassportStrategy(Strategy, AuthStrategyType.
       } satisfies UserAuthContext
     } catch (error) {
       handleAuthError(error, 'Error validating user API key')
-    }
-
-    /**
-     * Check for valid runner API key
-     */
-    try {
-      const runner = await this.runnerService.findByApiKey(token)
-      if (runner) {
-        return {
-          role: 'runner',
-          runnerId: runner.id,
-          runner,
-        } satisfies RunnerAuthContext
-      }
-    } catch (error) {
-      handleAuthError(error, 'Error validating runner API key')
-    }
-
-    /**
-     * Check for valid region proxy API key
-     */
-    try {
-      const region = await this.regionService.findOneByProxyApiKey(token)
-      if (region) {
-        return {
-          role: 'region-proxy',
-          regionId: region.id,
-        } satisfies RegionProxyAuthContext
-      }
-    } catch (error) {
-      handleAuthError(error, 'Error validating region proxy API key')
-    }
-
-    /**
-     * Check for valid region SSH gateway API key
-     */
-    try {
-      const region = await this.regionService.findOneBySshGatewayApiKey(token)
-      if (region) {
-        return {
-          role: 'region-ssh-gateway',
-          regionId: region.id,
-        } satisfies RegionSSHGatewayAuthContext
-      }
-    } catch (error) {
-      handleAuthError(error, 'Error validating region SSH gateway API key')
     }
 
     /**

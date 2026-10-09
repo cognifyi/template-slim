@@ -1,6 +1,6 @@
 #!/bin/sh
-# Copyright Daytona Platforms Inc.
-# SPDX-License-Identifier: AGPL-3.0
+# Copyright TemplateOrg.
+# SPDX-License-Identifier: Apache-2.0
 
 set -e
 

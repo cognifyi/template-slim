@@ -1,6 +1,6 @@
 /*
- * Copyright 2025 Daytona Platforms Inc.
- * SPDX-License-Identifier: AGPL-3.0
+ * Copyright 2025 TemplateOrg.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 import { ApiExtraModels, ApiProperty, ApiPropertyOptional, ApiSchema, getSchemaPath } from '@nestjs/swagger'
@@ -54,7 +54,7 @@ export class RateLimitEntry {
 
   @ApiPropertyOptional({
     description: 'Rate limit max requests',
-    example: 100,
+    example: 60,
   })
   @IsNumber()
   @IsOptional()
@@ -76,20 +76,6 @@ export class RateLimitConfig {
   })
   @IsOptional()
   authenticated?: RateLimitEntry
-
-  @ApiPropertyOptional({
-    description: 'Sandbox create rate limit',
-    type: RateLimitEntry,
-  })
-  @IsOptional()
-  sandboxCreate?: RateLimitEntry
-
-  @ApiPropertyOptional({
-    description: 'Sandbox lifecycle rate limit',
-    type: RateLimitEntry,
-  })
-  @IsOptional()
-  sandboxLifecycle?: RateLimitEntry
 }
 
 @ApiSchema({ name: 'OidcConfig' })
@@ -103,24 +89,24 @@ export class OidcConfig {
 
   @ApiProperty({
     description: 'OIDC client ID',
-    example: 'daytona-client',
+    example: 'template-slim-client',
   })
   @IsString()
   clientId: string
 
   @ApiProperty({
     description: 'OIDC audience',
-    example: 'daytona-api',
+    example: 'template-slim-api',
   })
   @IsString()
   audience: string
 }
 
 @ApiExtraModels(Announcement)
-@ApiSchema({ name: 'DaytonaConfiguration' })
+@ApiSchema({ name: 'TemplateSlimConfiguration' })
 export class ConfigurationDto {
   @ApiProperty({
-    description: 'Daytona version',
+    description: 'TemplateSlim version',
     example: '0.0.1',
   })
   @IsString()
@@ -153,48 +139,12 @@ export class ConfigurationDto {
   })
   announcements: Record<string, Announcement>
 
-  @ApiPropertyOptional({
-    description: 'Pylon application ID',
-    example: 'pylon-app-123',
-  })
-  @IsString()
-  @IsOptional()
-  pylonAppId?: string
-
   @ApiProperty({
     description: 'Proxy template URL',
-    example: 'https://{{PORT}}-{{sandboxId}}.proxy.example.com',
+    example: 'https://{{PORT}}.proxy.example.com',
   })
   @IsString()
   proxyTemplateUrl: string
-
-  @ApiProperty({
-    description: 'Toolbox template URL',
-    example: 'https://proxy.example.com/toolbox',
-  })
-  @IsString()
-  proxyToolboxUrl: string
-
-  @ApiProperty({
-    description: 'Default snapshot for sandboxes',
-    example: 'ubuntu:22.04',
-  })
-  @IsString()
-  defaultSnapshot: string
-
-  @ApiProperty({
-    description: 'Dashboard URL',
-    example: 'https://dashboard.example.com',
-  })
-  @IsString()
-  dashboardUrl: string
-
-  @ApiProperty({
-    description: 'Maximum auto-archive interval in minutes',
-    example: 43200,
-  })
-  @IsNumber()
-  maxAutoArchiveInterval: number
 
   @ApiProperty({
     description: 'Whether maintenance mode is enabled',
@@ -209,22 +159,6 @@ export class ConfigurationDto {
   })
   @IsString()
   environment: string
-
-  @ApiPropertyOptional({
-    description: 'Billing API URL',
-    example: 'https://billing.example.com',
-  })
-  @IsString()
-  @IsOptional()
-  billingApiUrl?: string
-
-  @ApiPropertyOptional({
-    description: 'Analytics API URL',
-    example: 'https://analytics.example.com',
-  })
-  @IsString()
-  @IsOptional()
-  analyticsApiUrl?: string
 
   @ApiPropertyOptional({
     description: 'SSH Gateway command',
@@ -259,32 +193,17 @@ export class ConfigurationDto {
     }
     this.linkedAccountsEnabled = configService.get('oidc.managementApi.enabled')
     this.proxyTemplateUrl = configService.getOrThrow('proxy.templateUrl')
-    this.proxyToolboxUrl = configService.getOrThrow('proxy.toolboxUrl')
-    this.defaultSnapshot = configService.getOrThrow('defaultSnapshot')
-    this.dashboardUrl = configService.getOrThrow('dashboardUrl')
-    this.maxAutoArchiveInterval = configService.getOrThrow('maxAutoArchiveInterval')
     this.maintananceMode = configService.getOrThrow('maintananceMode')
     this.environment = configService.getOrThrow('environment')
 
     this.sshGatewayCommand = configService.get('sshGateway.command')
     this.sshGatewayPublicKey = configService.get('sshGateway.publicKey')
 
-    if (configService.get('billingApiUrl')) {
-      this.billingApiUrl = configService.get('billingApiUrl')
-    }
-
-    if (configService.get('analyticsApiUrl')) {
-      this.analyticsApiUrl = configService.get('analyticsApiUrl')
-    }
-
     if (configService.get('posthog.apiKey')) {
       this.posthog = {
         apiKey: configService.get('posthog.apiKey'),
         host: configService.get('posthog.host'),
       }
-    }
-    if (configService.get('pylonAppId')) {
-      this.pylonAppId = configService.get('pylonAppId')
     }
     // TODO: announcements
     this.announcements = {}
@@ -293,14 +212,6 @@ export class ConfigurationDto {
       authenticated: {
         ttl: configService.get('rateLimit.authenticated.ttl'),
         limit: configService.get('rateLimit.authenticated.limit'),
-      },
-      sandboxCreate: {
-        ttl: configService.get('rateLimit.sandboxCreate.ttl'),
-        limit: configService.get('rateLimit.sandboxCreate.limit'),
-      },
-      sandboxLifecycle: {
-        ttl: configService.get('rateLimit.sandboxLifecycle.ttl'),
-        limit: configService.get('rateLimit.sandboxLifecycle.limit'),
       },
     }
   }

@@ -1,6 +1,6 @@
 /*
- * Copyright 2025 Daytona Platforms Inc.
- * SPDX-License-Identifier: AGPL-3.0
+ * Copyright 2025 TemplateOrg.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 import {
@@ -24,7 +24,6 @@ import { RequiredOrganizationMemberRole } from '../decorators/required-organizat
 import { CreateOrganizationDto } from '../dto/create-organization.dto'
 import { OrganizationDto } from '../dto/organization.dto'
 import { OrganizationInvitationDto } from '../dto/organization-invitation.dto'
-import { OrganizationUsageOverviewDto } from '../dto/organization-usage-overview.dto'
 import { UpdateOrganizationQuotaDto } from '../dto/update-organization-quota.dto'
 import { OrganizationMemberRole } from '../enums/organization-member-role.enum'
 import { OrganizationAuthContextGuard } from '../guards/organization-auth-context.guard'
@@ -41,12 +40,8 @@ import { Audit, TypedRequest } from '../../audit/decorators/audit.decorator'
 import { AuditAction } from '../../audit/enums/audit-action.enum'
 import { AuditTarget } from '../../audit/enums/audit-target.enum'
 import { EmailUtils } from '../../common/utils/email.util'
-import { OrganizationUsageService } from '../services/organization-usage.service'
-import { OrganizationSandboxDefaultLimitedNetworkEgressDto } from '../dto/organization-sandbox-default-limited-network-egress.dto'
 import { TypedConfigService } from '../../config/typed-config.service'
 import { AuthenticatedRateLimitGuard } from '../../common/guards/authenticated-rate-limit.guard'
-import { UpdateOrganizationRegionQuotaDto } from '../dto/update-organization-region-quota.dto'
-import { UpdateOrganizationDefaultRegionDto } from '../dto/update-organization-default-region.dto'
 import { RequireFlagsEnabled } from '@openfeature/nestjs-sdk'
 import { OtelCollectorAuthContextGuard } from '../guards/otel-collector-auth-context.guard'
 import { OtelConfigDto } from '../dto/otel-config.dto'
@@ -64,7 +59,6 @@ export class OrganizationController {
     private readonly organizationService: OrganizationService,
     private readonly organizationUserService: OrganizationUserService,
     private readonly organizationInvitationService: OrganizationInvitationService,
-    private readonly organizationUsageService: OrganizationUsageService,
     private readonly userService: UserService,
     private readonly configService: TypedConfigService,
   ) {}
@@ -218,45 +212,6 @@ export class OrganizationController {
     const organization = await this.organizationService.create(createOrganizationDto, authContext.userId, false, true)
     return OrganizationDto.fromOrganization(organization)
   }
-
-  @Patch('/:organizationId/default-region')
-  @HttpCode(204)
-  @ApiOperation({
-    summary: 'Set default region for organization',
-    operationId: 'setOrganizationDefaultRegion',
-  })
-  @ApiParam({
-    name: 'organizationId',
-    description: 'Organization ID',
-    type: 'string',
-  })
-  @ApiBody({
-    type: UpdateOrganizationDefaultRegionDto,
-    required: true,
-  })
-  @ApiResponse({
-    status: 204,
-    description: 'Default region set successfully',
-  })
-  @UseGuards(OrganizationAuthContextGuard)
-  @RequiredOrganizationMemberRole(OrganizationMemberRole.OWNER)
-  @Audit({
-    action: AuditAction.UPDATE,
-    targetType: AuditTarget.ORGANIZATION,
-    targetIdFromRequest: (req) => req.params.organizationId,
-    requestMetadata: {
-      body: (req: TypedRequest<UpdateOrganizationDefaultRegionDto>) => ({
-        defaultRegionId: req.body?.defaultRegionId,
-      }),
-    },
-  })
-  async setDefaultRegion(
-    @Param('organizationId') organizationId: string,
-    @Body() updateDto: UpdateOrganizationDefaultRegionDto,
-  ): Promise<void> {
-    await this.organizationService.setDefaultRegion(organizationId, updateDto.defaultRegionId)
-  }
-
   @Get()
   @ApiOperation({
     summary: 'List organizations',
@@ -322,27 +277,6 @@ export class OrganizationController {
   async delete(@Param('organizationId') organizationId: string): Promise<void> {
     return this.organizationService.delete(organizationId)
   }
-
-  @Get('/:organizationId/usage')
-  @ApiOperation({
-    summary: 'Get organization current usage overview',
-    operationId: 'getOrganizationUsageOverview',
-  })
-  @ApiParam({
-    name: 'organizationId',
-    description: 'Organization ID',
-    type: 'string',
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'Current usage overview',
-    type: OrganizationUsageOverviewDto,
-  })
-  @UseGuards(OrganizationAuthContextGuard)
-  async getUsageOverview(@Param('organizationId') organizationId: string): Promise<OrganizationUsageOverviewDto> {
-    return this.organizationUsageService.getUsageOverview(organizationId)
-  }
-
   @Patch('/:organizationId/quota')
   @HttpCode(204)
   @ApiOperation({
@@ -381,62 +315,6 @@ export class OrganizationController {
   ): Promise<void> {
     await this.organizationService.updateQuota(organizationId, updateDto)
   }
-
-  @Patch('/:organizationId/quota/:regionId')
-  @HttpCode(204)
-  @ApiOperation({
-    summary: 'Update organization region quota',
-    operationId: 'updateOrganizationRegionQuota',
-  })
-  @ApiParam({
-    name: 'organizationId',
-    description: 'Organization ID',
-    type: 'string',
-  })
-  @ApiParam({
-    name: 'regionId',
-    description: 'ID of the region where the updated quota will be applied',
-    type: 'string',
-  })
-  @ApiResponse({
-    status: 204,
-    description: 'Region quota updated successfully',
-  })
-  @AuthStrategy(AuthStrategyType.API_KEY)
-  @RequiredSystemRole(SystemRole.ADMIN)
-  @Audit({
-    action: AuditAction.UPDATE_REGION_QUOTA,
-    targetType: AuditTarget.ORGANIZATION,
-    targetIdFromRequest: (req) => req.params.organizationId,
-    requestMetadata: {
-      params: (req) => ({
-        regionId: req.params.regionId,
-      }),
-      body: (req: TypedRequest<UpdateOrganizationRegionQuotaDto>) => ({
-        sandboxClass: req.body?.sandboxClass,
-        totalCpuQuota: req.body?.totalCpuQuota,
-        totalMemoryQuota: req.body?.totalMemoryQuota,
-        totalDiskQuota: req.body?.totalDiskQuota,
-        totalGpuQuota: req.body?.totalGpuQuota,
-        allowedGpuTypes: req.body?.allowedGpuTypes,
-        maxCpuPerSandbox: req.body?.maxCpuPerSandbox,
-        maxMemoryPerSandbox: req.body?.maxMemoryPerSandbox,
-        maxDiskPerSandbox: req.body?.maxDiskPerSandbox,
-        maxDiskPerNonEphemeralSandbox: req.body?.maxDiskPerNonEphemeralSandbox,
-        maxCpuPerGpuSandbox: req.body?.maxCpuPerGpuSandbox,
-        maxMemoryPerGpuSandbox: req.body?.maxMemoryPerGpuSandbox,
-        maxDiskPerGpuSandbox: req.body?.maxDiskPerGpuSandbox,
-      }),
-    },
-  })
-  async updateOrganizationRegionQuota(
-    @Param('organizationId') organizationId: string,
-    @Param('regionId') regionId: string,
-    @Body() updateDto: UpdateOrganizationRegionQuotaDto,
-  ): Promise<void> {
-    await this.organizationService.updateRegionQuota(organizationId, regionId, updateDto)
-  }
-
   @Post('/:organizationId/leave')
   @ApiOperation({
     summary: 'Leave organization',
@@ -529,33 +407,6 @@ export class OrganizationController {
   async unsuspend(@Param('organizationId') organizationId: string): Promise<void> {
     return this.organizationService.unsuspend(organizationId)
   }
-
-  @Get('/otel-config/by-sandbox-auth-token/:authToken')
-  @ApiOperation({
-    summary: 'Get organization OTEL config by sandbox auth token',
-    operationId: 'getOrganizationOtelConfigBySandboxAuthToken',
-  })
-  @ApiParam({
-    name: 'authToken',
-    description: 'Sandbox Auth Token',
-    type: 'string',
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'OTEL Config',
-    type: OtelConfigDto,
-  })
-  @AuthStrategy(AuthStrategyType.API_KEY)
-  @UseGuards(OtelCollectorAuthContextGuard)
-  async getOtelConfigBySandboxAuthToken(@Param('authToken') authToken: string): Promise<OtelConfigDto> {
-    const otelConfigDto = await this.organizationService.getOtelConfigBySandboxAuthToken(authToken)
-    if (!otelConfigDto) {
-      throw new NotFoundException(`Organization OTEL config with sandbox auth token ${authToken} not found`)
-    }
-
-    return otelConfigDto
-  }
-
   @Get('/:organizationId/otel-config')
   @ApiOperation({
     summary: 'Get organization OTEL config by organization ID',
@@ -581,43 +432,6 @@ export class OrganizationController {
 
     return otelConfigDto
   }
-
-  @Post('/:organizationId/sandbox-default-limited-network-egress')
-  @ApiOperation({
-    summary: 'Update sandbox default limited network egress',
-    operationId: 'updateSandboxDefaultLimitedNetworkEgress',
-  })
-  @ApiParam({
-    name: 'organizationId',
-    description: 'Organization ID',
-    type: 'string',
-  })
-  @ApiResponse({
-    status: 204,
-    description: 'Sandbox default limited network egress updated successfully',
-  })
-  @AuthStrategy(AuthStrategyType.API_KEY)
-  @RequiredSystemRole(SystemRole.ADMIN)
-  @Audit({
-    action: AuditAction.UPDATE_SANDBOX_DEFAULT_LIMITED_NETWORK_EGRESS,
-    targetType: AuditTarget.ORGANIZATION,
-    targetIdFromRequest: (req) => req.params.organizationId,
-    requestMetadata: {
-      body: (req: TypedRequest<OrganizationSandboxDefaultLimitedNetworkEgressDto>) => ({
-        sandboxDefaultLimitedNetworkEgress: req.body?.sandboxDefaultLimitedNetworkEgress,
-      }),
-    },
-  })
-  async updateSandboxDefaultLimitedNetworkEgress(
-    @Param('organizationId') organizationId: string,
-    @Body() body: OrganizationSandboxDefaultLimitedNetworkEgressDto,
-  ): Promise<void> {
-    return this.organizationService.updateSandboxDefaultLimitedNetworkEgress(
-      organizationId,
-      body.sandboxDefaultLimitedNetworkEgress,
-    )
-  }
-
   @Put('/:organizationId/otel-config')
   @HttpCode(204)
   @ApiOperation({

@@ -1,6 +1,6 @@
 /*
- * Copyright 2025 Daytona Platforms Inc.
- * SPDX-License-Identifier: AGPL-3.0
+ * Copyright 2025 TemplateOrg.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 import { Module } from '@nestjs/common'
@@ -9,7 +9,6 @@ import { JwtStrategy } from './jwt.strategy'
 import { ApiKeyStrategy } from './api-key.strategy'
 import { UserModule } from '../user/user.module'
 import { ApiKeyModule } from '../api-key/api-key.module'
-import { SandboxModule } from '../sandbox/sandbox.module'
 import { TypedConfigService } from '../config/typed-config.service'
 import { HttpModule, HttpService } from '@nestjs/axios'
 import { OidcMetadata } from 'oidc-client-ts'
@@ -18,7 +17,6 @@ import { UserService } from '../user/user.service'
 import { TypedConfigModule } from '../config/typed-config.module'
 import { catchError, map } from 'rxjs/operators'
 import { FailedAuthTrackerService } from './failed-auth-tracker.service'
-import { RegionModule } from '../region/region.module'
 import { AuthStrategyType } from './enums/auth-strategy-type.enum'
 
 @Module({
@@ -31,8 +29,6 @@ import { AuthStrategyType } from './enums/auth-strategy-type.enum'
     TypedConfigModule,
     UserModule,
     ApiKeyModule,
-    SandboxModule,
-    RegionModule,
     HttpModule,
   ],
   providers: [

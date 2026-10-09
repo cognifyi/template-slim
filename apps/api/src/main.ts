@@ -1,6 +1,6 @@
 /*
- * Copyright 2025 Daytona Platforms Inc.
- * SPDX-License-Identifier: AGPL-3.0
+ * Copyright 2025 TemplateOrg.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 import { otelSdk } from './tracing'
@@ -15,7 +15,6 @@ import { SwaggerModule } from '@nestjs/swagger'
 import { INestApplication, Logger, ValidationPipe } from '@nestjs/common'
 import { AllExceptionsFilter } from './filters/all-exceptions.filter'
 import { ContentTypeInterceptor } from './common/interceptors/content-type.interceptors'
-import { MetricsInterceptor } from './interceptors/metrics.interceptor'
 import { HttpsOptions } from '@nestjs/common/interfaces/external/https-options.interface'
 import { TypedConfigService } from './config/typed-config.service'
 import { FailedAuthTrackerService } from './auth/failed-auth-tracker.service'
@@ -25,7 +24,7 @@ import { AuditInterceptor } from './audit/interceptors/audit.interceptor'
 import { join } from 'node:path'
 import { ApiKeyService } from './api-key/api-key.service'
 import { corsOptions } from './cors-options'
-import { DAYTONA_ADMIN_USER_ID } from './app.service'
+import { TEMPLATE_ADMIN_USER_ID } from './app.service'
 import { OrganizationService } from './organization/services/organization.service'
 import { OrganizationResourcePermission } from './organization/enums/organization-resource-permission.enum'
 import { MicroserviceOptions, Transport } from '@nestjs/microservices'
@@ -67,7 +66,6 @@ async function bootstrap() {
   app.useGlobalFilters(new AllExceptionsFilter(failedAuthTracker))
   app.useGlobalInterceptors(new LoggerErrorInterceptor())
   app.useGlobalInterceptors(new ContentTypeInterceptor())
-  app.useGlobalInterceptors(new MetricsInterceptor(configService))
   app.useGlobalInterceptors(app.get(AuditInterceptor))
   app.useGlobalPipes(
     new ValidationPipe({
@@ -124,30 +122,6 @@ async function bootstrap() {
     },
   })
 
-  // Replace dashboard api url before serving
-  if (configService.get('production') && !configService.get('dontServeDashboard')) {
-    const dashboardDir = join(__dirname, '..', 'dashboard')
-    const replaceInDirectory = (dir: string) => {
-      for (const file of readdirSync(dir)) {
-        const filePath = join(dir, file)
-        if (statSync(filePath).isDirectory()) {
-          if (file === 'assets') {
-            replaceInDirectory(filePath)
-          }
-          continue
-        }
-        Logger.log(`Replacing %DAYTONA_BASE_API_URL% in ${filePath}`)
-        const fileContent = readFileSync(filePath, 'utf8')
-        const newFileContent = fileContent.replaceAll(
-          '%DAYTONA_BASE_API_URL%',
-          configService.get('dashboardBaseApiUrl'),
-        )
-        writeFileSync(filePath, newFileContent)
-      }
-    }
-    replaceInDirectory(dashboardDir)
-  }
-
   // Starts listening for shutdown hooks
   app.enableShutdownHooks()
 
@@ -156,7 +130,7 @@ async function bootstrap() {
 
   if (isApiEnabled()) {
     await app.listen(port, host)
-    Logger.log(`🚀 Daytona API is running on: http://${host}:${port}/${globalPrefix}`)
+    Logger.log(`🚀 TemplateSlim API is running on: http://${host}:${port}/${globalPrefix}`)
   } else {
     await app.init()
     app.flushLogs()
@@ -197,10 +171,10 @@ async function createAdminApiKey(app: INestApplication, apiKeyName: string) {
   const apiKeyService = app.get(ApiKeyService)
   const organizationService = app.get(OrganizationService)
 
-  const personalOrg = await organizationService.findPersonal(DAYTONA_ADMIN_USER_ID)
+  const personalOrg = await organizationService.findPersonal(TEMPLATE_ADMIN_USER_ID)
   const { value } = await apiKeyService.createApiKey(
     personalOrg.id,
-    DAYTONA_ADMIN_USER_ID,
+    TEMPLATE_ADMIN_USER_ID,
     apiKeyName,
     Object.values(OrganizationResourcePermission),
   )

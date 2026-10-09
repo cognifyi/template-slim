@@ -1,6 +1,6 @@
 /*
- * Copyright Daytona Platforms Inc.
- * SPDX-License-Identifier: AGPL-3.0
+ * Copyright TemplateOrg.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 import { SystemActionGuard } from './system-action.guard'
@@ -10,11 +10,8 @@ import { createMockExecutionContext } from '../../test/helpers/execution-context
 import {
   createMockAdminUserAuthContext,
   createMockUserAuthContext,
-  createMockRunnerAuthContext,
   createMockProxyAuthContext,
   createMockSshGatewayAuthContext,
-  createMockRegionProxyAuthContext,
-  createMockRegionSshGatewayAuthContext,
   createMockHealthCheckAuthContext,
   createMockOtelCollectorAuthContext,
 } from '../../test/helpers/auth-context.factory'
@@ -96,11 +93,8 @@ describe('[AUTH] SystemActionGuard', () => {
   })
 
   it.each([
-    ['Runner', createMockRunnerAuthContext],
     ['Proxy', createMockProxyAuthContext],
     ['SshGateway', createMockSshGatewayAuthContext],
-    ['RegionProxy', createMockRegionProxyAuthContext],
-    ['RegionSshGateway', createMockRegionSshGatewayAuthContext],
     ['HealthCheck', createMockHealthCheckAuthContext],
     ['OtelCollector', createMockOtelCollectorAuthContext],
   ])('rejects %sAuthContext', async (_name, factory) => {

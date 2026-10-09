@@ -1,6 +1,6 @@
 /*
- * Copyright 2025 Daytona Platforms Inc.
- * SPDX-License-Identifier: AGPL-3.0
+ * Copyright 2025 TemplateOrg.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 import { ConflictException, Injectable, Logger, NotFoundException } from '@nestjs/common'
@@ -8,7 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { EntityManager, Repository, ArrayOverlap } from 'typeorm'
 import { ApiKey } from './api-key.entity'
 import { OrganizationResourcePermission } from '../organization/enums/organization-resource-permission.enum'
-import { RedisLockProvider } from '../sandbox/common/redis-lock.provider'
+import { RedisLockProvider } from '../common/providers/redis-lock.provider'
 import { OnAsyncEvent } from '../common/decorators/on-async-event.decorator'
 import { OrganizationEvents } from '../organization/constants/organization-events.constant'
 import { OrganizationResourcePermissionsUnassignedEvent } from '../organization/events/organization-resource-permissions-unassigned.event'

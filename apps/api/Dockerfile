@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     rm -rf /var/lib/apt/lists/*
 RUN npm install -g corepack && corepack enable
 
-WORKDIR /daytona
+WORKDIR /template-slim
 
 # Yarn caching layer
 COPY package.json yarn.lock .yarnrc.yml ./
@@ -22,25 +22,17 @@ COPY nx.json tsconfig.base.json .nxignore ./
 
 # App source
 COPY apps/api/ apps/api/
-COPY apps/dashboard/ apps/dashboard/
 
 # Lib dependencies
-COPY libs/runner-api-client/ libs/runner-api-client/
 COPY libs/api-client/ libs/api-client/
-COPY libs/analytics-api-client/ libs/analytics-api-client/
-COPY libs/toolbox-api-client/ libs/toolbox-api-client/
 COPY libs/sdk-typescript/ libs/sdk-typescript/
-COPY libs/runner-proto/ libs/runner-proto/
-COPY libs/billing-api-client/ libs/billing-api-client/
 
 ENV NX_DAEMON=false
 
 RUN yarn nx build api --configuration=production --nxBail=true
 
-RUN VITE_BASE_PATH=/dashboard/ VITE_API_URL=%DAYTONA_BASE_API_URL%/api yarn nx build dashboard --configuration=production --nxBail=true --output-style=stream
-
 # ── runtime ──────────────────────────────────────────────────────────────
-FROM node:24-slim AS daytona
+FROM node:24-slim AS api
 
 ENV CI=true
 
@@ -57,7 +49,7 @@ RUN npm install -g corepack && corepack enable && \
     corepack prepare yarn@4.13.0 --activate && \
     chmod -R a+rX /opt/corepack
 
-WORKDIR /daytona
+WORKDIR /template-slim
 
 # Nx (generatePackageJson) emits a pruned manifest + pruned lockfile carrying
 # only the api bundle's runtime closure. apps/api/package.json augments it with
@@ -68,12 +60,12 @@ WORKDIR /daytona
 # scripts, so the deploy migration init/pre/post-deploy jobs run from this image.
 # corepack hydrates yarn from the manifest's packageManager field; .yarnrc.yml
 # carries the supply-chain age gate into this install.
-COPY --from=builder /daytona/dist/apps/api/package.json /daytona/dist/apps/api/yarn.lock ./
-COPY --from=builder /daytona/.yarnrc.yml ./
+COPY --from=builder /template-slim/dist/apps/api/package.json /template-slim/dist/apps/api/yarn.lock ./
+COPY --from=builder /template-slim/.yarnrc.yml ./
 
 RUN yarn install --immutable
 
-COPY --from=builder /daytona/dist ./dist
+COPY --from=builder /template-slim/dist ./dist
 
 # The migration:run:* scripts execute the typeorm CLI through ts-node against
 # the TypeScript data-sources (apps/api/src/migrations/**), which load entities
@@ -81,13 +73,13 @@ COPY --from=builder /daytona/dist ./dist
 # deploy migration jobs resolve identically to a full checkout. --chmod makes
 # them world-readable: the sources carry restrictive repo perms that would
 # otherwise be unreadable to a non-root migration pod.
-COPY --from=builder --chmod=0755 /daytona/apps/api/src ./apps/api/src
-COPY --from=builder --chmod=0644 /daytona/apps/api/tsconfig.json /daytona/apps/api/tsconfig.app.json /daytona/apps/api/tsconfig.spec.json ./apps/api/
-COPY --from=builder --chmod=0644 /daytona/tsconfig.base.json ./
+COPY --from=builder --chmod=0755 /template-slim/apps/api/src ./apps/api/src
+COPY --from=builder --chmod=0644 /template-slim/apps/api/tsconfig.json /template-slim/apps/api/tsconfig.app.json /template-slim/apps/api/tsconfig.spec.json ./apps/api/
+COPY --from=builder --chmod=0644 /template-slim/tsconfig.base.json ./
 
 ARG VERSION=0.0.1
 ENV VERSION=${VERSION}
 
-HEALTHCHECK CMD [ "curl", "-f", "http://localhost:3000/api/config" ]
+HEALTHCHECK CMD [ "curl", "-f", "http://localhost:3001/api/health" ]
 
 ENTRYPOINT ["node", "dist/apps/api/main.js"]

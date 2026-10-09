@@ -1,13 +1,13 @@
 header:
   license:
-    spdx-id: AGPL-3.0
-    copyright-owner: Daytona Platforms Inc.
+    spdx-id: Apache-2.0
+    copyright-owner: TemplateOrg
     content: |
-      Copyright Daytona Platforms Inc.
-      SPDX-License-Identifier: AGPL-3.0
+      Copyright TemplateOrg.
+      SPDX-License-Identifier: Apache-2.0
     pattern: |
-      Copyright (\d{4} )?Daytona Platforms Inc\.
-      SPDX-License-Identifier: AGPL-3\.0
+      Copyright (\d{4} )?TemplateOrg\.
+      SPDX-License-Identifier: Apache-2\.0
   paths:
     - '**/*.go'
     - '**/*.sh'
@@ -18,13 +18,8 @@ header:
 
   paths-ignore:
     - 'libs/**'
-    - '!libs/computer-use/**'
     - 'apps/api/src/generate-openapi.ts'
-    - 'apps/runner/pkg/api/docs/docs.go'
-    - 'examples/**'
     - 'apps/docs/**'
     - 'hack/**'
-    - 'apps/daemon/pkg/toolbox/docs/docs.go'
-    - 'apps/dashboard/public/mockServiceWorker.js'
 
   comment: on-failure

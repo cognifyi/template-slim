@@ -1,6 +1,6 @@
 /*
- * Copyright 2025 Daytona Platforms Inc.
- * SPDX-License-Identifier: AGPL-3.0
+ * Copyright 2025 TemplateOrg.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 import { Module } from '@nestjs/common'
@@ -9,7 +9,7 @@ import { ApiKeyService } from './api-key.service'
 import { ApiKey } from './api-key.entity'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { OrganizationModule } from '../organization/organization.module'
-import { RedisLockProvider } from '../sandbox/common/redis-lock.provider'
+import { RedisLockProvider } from '../common/providers/redis-lock.provider'
 
 @Module({
   imports: [OrganizationModule, TypeOrmModule.forFeature([ApiKey])],

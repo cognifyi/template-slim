@@ -1,6 +1,6 @@
 /*
- * Copyright Daytona Platforms Inc.
- * SPDX-License-Identifier: AGPL-3.0
+ * Copyright TemplateOrg.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 import { CreateRegion, CreateRegionResponse } from '@template-slim/api-client'

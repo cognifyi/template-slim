@@ -1,12 +1,12 @@
 header:
   license:
     spdx-id: Apache-2.0
-    copyright-owner: Daytona Platforms Inc.
+    copyright-owner: TemplateOrg
     content: |
-      Copyright Daytona Platforms Inc.
+      Copyright TemplateOrg.
       SPDX-License-Identifier: Apache-2.0
     pattern: |
-      Copyright (\d{4} )?Daytona Platforms Inc\.
+      Copyright (\d{4} )?TemplateOrg\.
       SPDX-License-Identifier: Apache-2\.0
   paths:
     - 'libs/**/*.go'
@@ -15,27 +15,12 @@ header:
     - 'libs/**/*.ts'
     - 'libs/**/*.tsx'
     - 'libs/**/*.py'
-    - 'libs/**/*.rb'
-    - 'libs/**/*.java'
 
   paths-ignore:
-    - 'libs/analytics-api-client/**'
-    - 'libs/billing-api-client/**'
     - 'libs/api-client/**'
-    - 'libs/runner-api-client/**'
     - 'libs/api-client-go/**'
     - 'libs/api-client-python/**'
-    - 'libs/api-client-python-async/**'
-    - 'libs/api-client-ruby/**'
     - 'apps/docs/**'
-    - 'libs/computer-use/**'
     - 'hack/**'
-    - 'libs/toolbox-api-client/**'
-    - 'libs/toolbox-api-client-python/**'
-    - 'libs/toolbox-api-client-python-async/**'
-    - 'libs/toolbox-api-client-ruby/**'
-    - 'libs/toolbox-api-client-go/**'
-    - 'libs/api-client-java/**'
-    - 'libs/toolbox-api-client-java/**'
 
   comment: on-failure

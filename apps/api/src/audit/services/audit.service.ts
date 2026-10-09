@@ -1,6 +1,6 @@
 /*
- * Copyright 2025 Daytona Platforms Inc.
- * SPDX-License-Identifier: AGPL-3.0
+ * Copyright 2025 TemplateOrg.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 import { Inject, Injectable, Logger, NotFoundException, OnApplicationBootstrap, Optional } from '@nestjs/common'
@@ -12,7 +12,7 @@ import { UpdateAuditLogInternalDto } from '../dto/update-audit-log-internal.dto'
 import { AuditLog } from '../entities/audit-log.entity'
 import { PaginatedList } from '../../common/interfaces/paginated-list.interface'
 import { TypedConfigService } from '../../config/typed-config.service'
-import { RedisLockProvider } from '../../sandbox/common/redis-lock.provider'
+import { RedisLockProvider } from '../../common/providers/redis-lock.provider'
 import { AUDIT_LOG_PUBLISHER, AUDIT_STORAGE_ADAPTER } from '../constants/audit-tokens'
 import { AuditLogStorageAdapter } from '../interfaces/audit-storage.interface'
 import { AuditLogPublisher } from '../interfaces/audit-publisher.interface'

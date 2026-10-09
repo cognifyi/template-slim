@@ -1,13 +1,12 @@
 /*
- * Copyright 2025 Daytona Platforms Inc.
- * SPDX-License-Identifier: AGPL-3.0
+ * Copyright 2025 TemplateOrg.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 import { createParamDecorator, ExecutionContext } from '@nestjs/common'
 import { BaseAuthContext, isBaseAuthContext } from '../interfaces/base-auth-context.interface'
 import { isUserAuthContext } from '../interfaces/user-auth-context.interface'
 import { isOrganizationAuthContext } from '../interfaces/organization-auth-context.interface'
-import { isRunnerAuthContext } from '../interfaces/runner-auth-context.interface'
 import { getAuthContext } from '../utils/get-auth-context'
 
 /**
@@ -41,10 +40,3 @@ export const IsUserAuthContext = () => AuthContext(isUserAuthContext)
  * Extracts the authenticated user context and validates it is an {@link OrganizationAuthContext} at runtime.
  */
 export const IsOrganizationAuthContext = () => AuthContext(isOrganizationAuthContext)
-
-/**
- * Shorthand for `@AuthContext(isRunnerAuthContext)`.
- *
- * Extracts the authenticated user context and validates it is a {@link RunnerAuthContext} at runtime.
- */
-export const IsRunnerAuthContext = () => AuthContext(isRunnerAuthContext)

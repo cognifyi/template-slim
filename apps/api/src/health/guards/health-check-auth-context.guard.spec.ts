@@ -1,6 +1,6 @@
 /*
- * Copyright Daytona Platforms Inc.
- * SPDX-License-Identifier: AGPL-3.0
+ * Copyright TemplateOrg.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 import { HealthCheckAuthContextGuard } from './health-check-auth-context.guard'
@@ -10,9 +10,6 @@ import {
   createMockOrganizationAuthContext,
   createMockOtelCollectorAuthContext,
   createMockProxyAuthContext,
-  createMockRegionProxyAuthContext,
-  createMockRegionSshGatewayAuthContext,
-  createMockRunnerAuthContext,
   createMockSshGatewayAuthContext,
   createMockUserAuthContext,
 } from '../../test/helpers/auth-context.factory'
@@ -33,11 +30,8 @@ describe('[AUTH] HealthCheckAuthContextGuard', () => {
   it.each([
     ['User', createMockUserAuthContext],
     ['Organization', createMockOrganizationAuthContext],
-    ['Runner', createMockRunnerAuthContext],
     ['Proxy', createMockProxyAuthContext],
     ['SshGateway', createMockSshGatewayAuthContext],
-    ['RegionProxy', createMockRegionProxyAuthContext],
-    ['RegionSshGateway', createMockRegionSshGatewayAuthContext],
     ['OtelCollector', createMockOtelCollectorAuthContext],
   ])('rejects %sAuthContext', async (_name, factory) => {
     const { context } = createMockExecutionContext({ user: factory() })

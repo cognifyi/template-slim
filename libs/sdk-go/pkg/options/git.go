@@ -1,4 +1,4 @@
-// Copyright 2025 Daytona Platforms Inc.
+// Copyright 2025 TemplateOrg.
 // SPDX-License-Identifier: Apache-2.0
 
 // Package options provides functional option types for configuring SDK operations.

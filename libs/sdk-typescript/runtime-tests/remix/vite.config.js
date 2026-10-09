@@ -1,4 +1,4 @@
-// Copyright Daytona Platforms Inc.
+// Copyright TemplateOrg.
 // SPDX-License-Identifier: Apache-2.0
 
 import { vitePlugin as remix } from '@remix-run/dev'

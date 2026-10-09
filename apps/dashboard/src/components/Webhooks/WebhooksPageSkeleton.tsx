@@ -1,6 +1,6 @@
 /*
- * Copyright Daytona Platforms Inc.
- * SPDX-License-Identifier: AGPL-3.0
+ * Copyright TemplateOrg.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 import { PageContent, PageFooter, PageHeader, PageIntro, PageLayout } from '@/components/PageLayout'

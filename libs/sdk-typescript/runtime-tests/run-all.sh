@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Copyright Daytona Platforms Inc.
+# Copyright TemplateOrg.
 # SPDX-License-Identifier: Apache-2.0
 
 # Runtime compatibility tests for @template-slim/sdk

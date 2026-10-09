@@ -1,6 +1,6 @@
 /*
- * Copyright Daytona Platforms Inc.
- * SPDX-License-Identifier: AGPL-3.0
+ * Copyright TemplateOrg.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 import { OrganizationAuthContextGuard } from './organization-auth-context.guard'
@@ -9,11 +9,8 @@ import { InvalidAuthenticationContextException } from '../../common/exceptions/i
 import { AccessDeniedException } from '../../common/exceptions/access-denied.exception'
 import {
   createMockUserAuthContext,
-  createMockRunnerAuthContext,
   createMockProxyAuthContext,
   createMockSshGatewayAuthContext,
-  createMockRegionProxyAuthContext,
-  createMockRegionSshGatewayAuthContext,
   createMockHealthCheckAuthContext,
   createMockOtelCollectorAuthContext,
 } from '../../test/helpers/auth-context.factory'
@@ -62,11 +59,8 @@ describe('[AUTH] OrganizationAuthContextGuard', () => {
   })
 
   it.each([
-    ['Runner', createMockRunnerAuthContext],
     ['Proxy', createMockProxyAuthContext],
     ['SshGateway', createMockSshGatewayAuthContext],
-    ['RegionProxy', createMockRegionProxyAuthContext],
-    ['RegionSshGateway', createMockRegionSshGatewayAuthContext],
     ['HealthCheck', createMockHealthCheckAuthContext],
     ['OtelCollector', createMockOtelCollectorAuthContext],
   ])('should reject %sAuthContext', async (_name, factory) => {

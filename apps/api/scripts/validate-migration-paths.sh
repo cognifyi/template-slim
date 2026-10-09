@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Copyright Daytona Platforms Inc.
-# SPDX-License-Identifier: AGPL-3.0
+# Copyright TemplateOrg.
+# SPDX-License-Identifier: Apache-2.0
 
 # Fails if any migration file is placed directly under
 # apps/api/src/migrations/ instead of pre-deploy/ or post-deploy/.

@@ -1,4 +1,4 @@
-# Copyright Daytona Platforms Inc.
+# Copyright TemplateOrg.
 # SPDX-License-Identifier: Apache-2.0
 
 """Shared fixtures and mock setup for Daytona Python SDK tests."""

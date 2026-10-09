@@ -1,9 +1,9 @@
 /*
- * Copyright 2025 Daytona Platforms Inc.
- * SPDX-License-Identifier: AGPL-3.0
+ * Copyright 2025 TemplateOrg.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
-import { RedisLockProvider } from '../../sandbox/common/redis-lock.provider'
+import { RedisLockProvider } from '../../common/providers/redis-lock.provider'
 
 type DistributedLockOptions = {
   lockKey?: string

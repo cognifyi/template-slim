@@ -1,6 +1,6 @@
 /*
- * Copyright 2025 Daytona Platforms Inc.
- * SPDX-License-Identifier: AGPL-3.0
+ * Copyright 2025 TemplateOrg.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 import { Module, NestModule, MiddlewareConsumer, RequestMethod, ExecutionContext } from '@nestjs/common'
@@ -12,40 +12,28 @@ import { FailedAuthRateLimitMiddleware } from './common/middleware/failed-auth-r
 import { AppService } from './app.service'
 import { UserModule } from './user/user.module'
 import { TypeOrmModule } from '@nestjs/typeorm'
-import { SandboxModule } from './sandbox/sandbox.module'
 import { AuthModule } from './auth/auth.module'
-import { ServeStaticModule } from '@nestjs/serve-static'
 import { join } from 'path'
 import { ApiKeyModule } from './api-key/api-key.module'
 import { seconds, ThrottlerModule } from '@nestjs/throttler'
-import { DockerRegistryModule } from './docker-registry/docker-registry.module'
 import { RedisModule, getRedisConnectionToken } from '@nestjs-modules/ioredis'
 import { ScheduleModule } from '@nestjs/schedule'
 import { EventEmitterModule } from '@nestjs/event-emitter'
-import { UsageModule } from './usage/usage.module'
-import { AnalyticsModule } from './analytics/analytics.module'
 import { OrganizationModule } from './organization/organization.module'
-import { EmailModule } from './email/email.module'
 import { TypedConfigService } from './config/typed-config.service'
 import { TypedConfigModule } from './config/typed-config.module'
-import { NotificationModule } from './notification/notification.module'
-import { WebhookModule } from './webhook/webhook.module'
-import { ObjectStorageModule } from './object-storage/object-storage.module'
 import { CustomNamingStrategy } from './common/utils/naming-strategy.util'
 import { MaintenanceMiddleware } from './common/middleware/maintenance.middleware'
 import { AuditModule } from './audit/audit.module'
 import { HealthModule } from './health/health.module'
+import { HelloModule } from './hello/hello.module'
 import { OpenFeatureModule } from '@openfeature/nestjs-sdk'
 import { OpenFeaturePostHogProvider } from './common/providers/openfeature-posthog.provider'
 import { LoggerModule } from 'nestjs-pino'
 import { getPinoTransport, swapMessageAndObject } from './common/utils/pino.util'
 import { Redis } from 'ioredis'
 import { ThrottlerStorageRedisService } from '@nest-lab/throttler-storage-redis'
-import { RegionModule } from './region/region.module'
 import { BodyParserErrorModule } from './common/modules/body-parser-error.module'
-import { AdminModule } from './admin/admin.module'
-import { ClickHouseModule } from './clickhouse/clickhouse.module'
-import { SandboxTelemetryModule } from './sandbox-telemetry/sandbox-telemetry.module'
 
 @Module({
   imports: [
@@ -106,33 +94,6 @@ import { SandboxTelemetryModule } from './sandbox-telemetry/sandbox-telemetry.mo
       },
     }),
     BodyParserErrorModule,
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..'),
-      exclude: ['/api/{*path}'],
-      renderPath: '/runner-amd64',
-      serveStaticOptions: {
-        cacheControl: false,
-      },
-    }),
-    ServeStaticModule.forRootAsync({
-      inject: [TypedConfigService],
-      useFactory: (configService: TypedConfigService) => {
-        if (configService.get('dontServeDashboard')) {
-          return []
-        }
-        return [
-          {
-            rootPath: join(__dirname, '..', 'dashboard'),
-            serveRoot: '/dashboard',
-            exclude: ['/api/{*path}'],
-            renderPath: '/',
-            serveStaticOptions: {
-              cacheControl: false,
-            },
-          },
-        ]
-      },
-    }),
     RedisModule.forRootAsync({
       inject: [TypedConfigService],
       useFactory: (configService: TypedConfigService) => ({
@@ -157,8 +118,6 @@ import { SandboxTelemetryModule } from './sandbox-telemetry/sandbox-telemetry.mo
           { name: 'anonymous', config: rateLimit.anonymous },
           { name: 'failed-auth', config: rateLimit.failedAuth },
           { name: 'authenticated', config: rateLimit.authenticated },
-          { name: 'sandbox-create', config: rateLimit.sandboxCreate },
-          { name: 'sandbox-lifecycle', config: rateLimit.sandboxLifecycle },
         ]
           .filter(({ config }) => config.ttl !== undefined && config.limit !== undefined)
           .map(({ name, config }) => ({
@@ -180,35 +139,11 @@ import { SandboxTelemetryModule } from './sandbox-telemetry/sandbox-telemetry.mo
     ApiKeyModule,
     AuthModule,
     UserModule,
-    SandboxModule,
-    DockerRegistryModule,
     ScheduleModule.forRoot(),
-    UsageModule,
-    AnalyticsModule,
     OrganizationModule,
-    RegionModule,
-    AdminModule,
-    EmailModule.forRootAsync({
-      inject: [TypedConfigService],
-      useFactory: (configService: TypedConfigService) => {
-        return {
-          host: configService.get('smtp.host'),
-          port: configService.get('smtp.port'),
-          user: configService.get('smtp.user'),
-          password: configService.get('smtp.password'),
-          secure: configService.get('smtp.secure'),
-          from: configService.get('smtp.from'),
-          dashboardUrl: configService.getOrThrow('dashboardUrl'),
-        }
-      },
-    }),
-    NotificationModule,
-    WebhookModule,
-    ObjectStorageModule,
     AuditModule,
     HealthModule,
-    ClickHouseModule,
-    SandboxTelemetryModule,
+    HelloModule,
     OpenFeatureModule.forRoot({
       contextFactory: (request: ExecutionContext) => {
         const req = request.switchToHttp().getRequest()

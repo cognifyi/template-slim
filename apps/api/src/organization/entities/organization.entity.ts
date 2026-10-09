@@ -1,13 +1,12 @@
 /*
- * Copyright 2025 Daytona Platforms Inc.
- * SPDX-License-Identifier: AGPL-3.0
+ * Copyright 2025 TemplateOrg.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
 import { OrganizationUser } from './organization-user.entity'
 import { OrganizationRole } from './organization-role.entity'
 import { OrganizationInvitation } from './organization-invitation.entity'
-import { RegionQuota } from './region-quota.entity'
 
 @Entity()
 export class Organization {
@@ -116,12 +115,6 @@ export class Organization {
     name: 'sandbox_lifecycle_rate_limit_ttl_seconds',
   })
   sandboxLifecycleRateLimitTtlSeconds: number | null
-
-  @OneToMany(() => RegionQuota, (quota) => quota.organization, {
-    cascade: true,
-    onDelete: 'CASCADE',
-  })
-  regionQuotas: RegionQuota[]
 
   @OneToMany(() => OrganizationRole, (organizationRole) => organizationRole.organization, {
     cascade: true,

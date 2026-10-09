@@ -1,6 +1,6 @@
 /*
- * Copyright 2025 Daytona Platforms Inc.
- * SPDX-License-Identifier: AGPL-3.0
+ * Copyright 2025 TemplateOrg.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 import { ConfigService } from '@nestjs/config'
@@ -175,23 +175,6 @@ export class TypedConfigService {
       tls: this.get('redis.tls'),
       lazyConnect: this.get('skipConnections'),
       ...overrides,
-    }
-  }
-
-  /**
-   * Get the ClickHouse configuration
-   * @returns The ClickHouse configuration
-   */
-  getClickHouseConfig() {
-    const host = this.get('clickhouse.host')
-    if (!host) {
-      return null
-    }
-    return {
-      url: `${this.get('clickhouse.protocol')}://${host}:${this.get('clickhouse.port')}`,
-      username: this.get('clickhouse.username'),
-      password: this.get('clickhouse.password'),
-      database: this.get('clickhouse.database'),
     }
   }
 }

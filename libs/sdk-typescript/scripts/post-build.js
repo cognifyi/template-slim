@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Copyright Daytona Platforms Inc.
+// Copyright TemplateOrg.
 // SPDX-License-Identifier: Apache-2.0
 
 const fs = require('fs')

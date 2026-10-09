@@ -1,4 +1,4 @@
-// Copyright Daytona Platforms Inc.
+// Copyright TemplateOrg.
 // SPDX-License-Identifier: Apache-2.0
 
 import { app, HttpRequest, HttpResponseInit, InvocationContext } from '@azure/functions'

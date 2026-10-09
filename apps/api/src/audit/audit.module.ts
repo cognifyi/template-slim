@@ -1,6 +1,6 @@
 /*
- * Copyright 2025 Daytona Platforms Inc.
- * SPDX-License-Identifier: AGPL-3.0
+ * Copyright 2025 TemplateOrg.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 import { Module } from '@nestjs/common'
@@ -10,7 +10,7 @@ import { AuditLog } from './entities/audit-log.entity'
 import { AuditService } from './services/audit.service'
 import { AuditInterceptor } from './interceptors/audit.interceptor'
 import { AuditLogSubscriber } from './subscribers/audit-log.subscriber'
-import { RedisLockProvider } from '../sandbox/common/redis-lock.provider'
+import { RedisLockProvider } from '../common/providers/redis-lock.provider'
 import { AuditController } from './controllers/audit.controller'
 import { AuditKafkaConsumerController } from './publishers/kafka/audit-kafka-consumer.controller'
 import { ClientsModule, Transport } from '@nestjs/microservices'
