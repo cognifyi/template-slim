@@ -29,12 +29,15 @@ import { SystemRole } from '../../user/enums/system-role.enum'
 import { TypedConfigService } from '../../config/typed-config.service'
 import { LogExecution } from '../../common/decorators/log-execution.decorator'
 import { TrackJobExecution } from '../../common/decorators/track-job-execution.decorator'
+import { TrackableJobExecutions } from '../../common/interfaces/trackable-job-executions'
 import { WithInstrumentation } from '../../common/decorators/otel.decorator'
 import { EncryptionService } from '../../encryption/encryption.service'
 import { OtelConfigDto } from '../dto/otel-config.dto'
 
 @Injectable()
-export class OrganizationService {
+export class OrganizationService implements TrackableJobExecutions {
+  activeJobs = new Set<string>()
+
   private readonly logger = new Logger(OrganizationService.name)
   private defaultOrganizationQuota: CreateOrganizationQuotaDto
 

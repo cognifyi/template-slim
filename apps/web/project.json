@@ -1,0 +1,44 @@
+{
+  "name": "web",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/web",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "serve": {
+      "executor": "@nx/next:server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "web:build",
+        "dev": true,
+        "port": 3000
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "web:build:development",
+          "dev": true
+        },
+        "production": {
+          "buildTarget": "web:build:production",
+          "dev": false
+        }
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "inputs": ["default", "{projectRoot}/tsconfig.json"],
+      "options": {
+        "command": "tsc --noEmit -p {projectRoot}/tsconfig.json",
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "docker": {
+      "options": {
+        "target": "web"
+      }
+    },
+    "push-manifest": {},
+    "check-version-env": {}
+  }
+}
