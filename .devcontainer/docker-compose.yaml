@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   app:
     build:
@@ -7,8 +5,11 @@ services:
       dockerfile: Dockerfile
     privileged: true
     volumes:
-      - ..:/workspaces/daytona
+      - ..:/workspaces/template-slim
 
+  # Local OIDC provider for API login in development.
+  # The API boots only when OIDC discovery succeeds; point OIDC_ISSUER_BASE_URL
+  # here or at your own provider. Safe to remove if you don't use OIDC login.
   dex:
     image: dexidp/dex:v2.42.0
     volumes:
@@ -21,79 +22,19 @@ services:
     environment:
       - POSTGRES_PASSWORD=pass
       - POSTGRES_USER=user
-      - POSTGRES_DB=application_ctx
-
-  pgadmin:
-    image: dpage/pgadmin4:9.2.0
-    entrypoint: ['sh', '-c', 'chmod 600 /pgpass && exec /entrypoint.sh']
-    environment:
-      PGADMIN_DEFAULT_EMAIL: dev@daytona.io
-      PGADMIN_DEFAULT_PASSWORD: pgadmin
-      PGADMIN_CONFIG_SERVER_MODE: 'False'
-      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
-    user: root
-    volumes:
-      - ./pgadmin4/servers.json:/pgadmin4/servers.json
-      - ./pgadmin4/pgpass:/pgpass
-    depends_on:
-      - db
+      - POSTGRES_DB=app
 
   redis:
-    image: redis:latest
+    image: redis:7-alpine
 
-  registry-ui:
-    image: joxit/docker-registry-ui:main
-    restart: always
-    environment:
-      - SINGLE_REGISTRY=true
-      - REGISTRY_TITLE=Docker Registry UI
-      - DELETE_IMAGES=true
-      - SHOW_CONTENT_DIGEST=true
-      - NGINX_PROXY_PASS_URL=http://registry:5000
-      - SHOW_CATALOG_NB_TAGS=true
-      - CATALOG_MIN_BRANCHES=1
-      - CATALOG_MAX_BRANCHES=1
-      - TAGLIST_PAGE_SIZE=100
-      - REGISTRY_SECURED=false
-      - CATALOG_ELEMENTS_LIMIT=1000
-
+  # Local image registry for the `docker` nx targets (api/web/worker).
   registry:
     image: registry:2.8.2
     restart: always
     environment:
-      REGISTRY_HTTP_HEADERS_Access-Control-Allow-Origin: '[http://registry-ui.example.com]'
-      REGISTRY_HTTP_HEADERS_Access-Control-Allow-Methods: '[HEAD,GET,OPTIONS,DELETE]'
-      REGISTRY_HTTP_HEADERS_Access-Control-Allow-Credentials: '[true]'
-      REGISTRY_HTTP_HEADERS_Access-Control-Allow-Headers: '[Authorization,Accept,Cache-Control]'
-      REGISTRY_HTTP_HEADERS_Access-Control-Expose-Headers: '[Docker-Content-Digest]'
       REGISTRY_STORAGE_DELETE_ENABLED: 'true'
     volumes:
       - registry:/var/lib/registry
 
-  maildev:
-    image: maildev/maildev
-
-  rustfs:
-    image: rustfs/rustfs:latest
-    environment:
-      - RUSTFS_ACCESS_KEY=minioadmin
-      - RUSTFS_SECRET_KEY=minioadmin
-      - RUSTFS_REGION=us-east-1
-      - RUSTFS_ADDRESS=:9000
-      - RUSTFS_CONSOLE_ADDRESS=:9001
-      - RUSTFS_CONSOLE_ENABLE=true
-    volumes:
-      - rustfs_data:/data
-    command: /data
-
-  jaeger:
-    image: jaegertracing/all-in-one:1.74.0
-
-  otel-collector:
-    image: otel/opentelemetry-collector-contrib:0.138.0
-    volumes:
-      - ./otel/otel-collector-config.yaml:/etc/otelcol-contrib/config.yaml
-
 volumes:
   registry: {}
-  rustfs_data: {}
